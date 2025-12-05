@@ -356,20 +356,6 @@
             border: 1px solid rgba(59, 130, 246, 0.4);
         }
 
-        /* Empty State */
-        .empty-state {
-            text-align: center;
-            padding: 40px;
-            color: #94a3b8;
-        }
-
-        .empty-state svg {
-            width: 80px;
-            height: 80px;
-            margin-bottom: 20px;
-            opacity: 0.5;
-        }
-
         /* Modal */
         .modal {
             display: none;
@@ -517,7 +503,7 @@
 
         <!-- Loading State -->
         <div id="loading" class="loading" style="display:none;">
-            Loading your earnings data...
+            ⏳ Loading your earnings data...
         </div>
 
         <!-- Main Content -->
@@ -608,44 +594,79 @@
         let userToken = null;
         let userData = null;
         let earningsData = [];
+        let currentUserId = null;
 
-        // Get token from URL or storage
-        function initializeAuth() {
+        // Get URL parameters
+        function getUrlParameter(name) {
             const params = new URLSearchParams(window.location.search);
-            const token = params.get('token');
+            return params.get(name);
+        }
 
-            if (token) {
-                userToken = token;
-                localStorage.setItem('earningsToken', token);
-                // Remove token from URL
-                window.history.replaceState({}, document.title, window.location.pathname);
-            } else {
-                userToken = localStorage.getItem('earningsToken');
+        // Decode base64
+        function decodeBase64(str) {
+            try {
+                return atob(str);
+            } catch (e) {
+                console.error('Base64 decode error:', e);
+                return null;
             }
+        }
 
-            if (!userToken) {
-                showError('No authentication token found. Please login through refer.pratheek.shop');
+        // Initialize authentication
+        function initializeAuth() {
+            const uid = getUrlParameter('uid');
+            const authToken = getUrlParameter('auth_token');
+
+            console.log('URL Parameters:', { uid, authToken });
+
+            if (!uid || !authToken) {
+                const storedToken = localStorage.getItem('earningsToken');
+                if (storedToken) {
+                    userToken = storedToken;
+                    currentUserId = localStorage.getItem('userId');
+                    return true;
+                }
+                showError('❌ No authentication token found. Please login through refer.pratheek.shop');
                 return false;
             }
+
+            // Decode the auth token
+            const decodedToken = decodeBase64(authToken);
+            console.log('Decoded token:', decodedToken);
+
+            if (!decodedToken) {
+                showError('❌ Invalid authentication token format');
+                return false;
+            }
+
+            userToken = decodedToken;
+            currentUserId = uid;
+
+            // Store for future use
+            localStorage.setItem('earningsToken', decodedToken);
+            localStorage.setItem('userId', uid);
+
+            // Remove from URL
+            window.history.replaceState({}, document.title, window.location.pathname);
 
             return true;
         }
 
-        // Validate token and load data
+        // Load data
         async function loadData() {
             if (!initializeAuth()) return;
 
             try {
                 document.getElementById('loading').style.display = 'block';
 
-                // Validate token
+                // Validate token and get user info
                 const validateRes = await fetch(`${API_BASE_URL}/api/earnings/validate-token`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
                         'Authorization': `Bearer ${userToken}`
                     },
-                    body: JSON.stringify({ token: userToken })
+                    body: JSON.stringify({ token: userToken, uid: currentUserId })
                 });
 
                 if (!validateRes.ok) {
@@ -653,9 +674,14 @@
                 }
 
                 const validateData = await validateRes.json();
-                userData = validateData.user;
+                if (!validateData.success) {
+                    throw new Error(validateData.error || 'Authentication failed');
+                }
 
-                // Load all earnings data
+                userData = validateData.user;
+                console.log('User authenticated:', userData);
+
+                // Load all data
                 await Promise.all([
                     loadEarnings(),
                     loadWinners(),
@@ -666,14 +692,18 @@
 
                 document.getElementById('loading').style.display = 'none';
                 document.getElementById('content').style.display = 'block';
+                showSuccess('✅ Welcome back!');
             } catch (error) {
-                showError(error.message);
+                console.error('Load error:', error);
+                showError('❌ ' + error.message);
+                localStorage.removeItem('earningsToken');
+                localStorage.removeItem('userId');
             }
         }
 
         // Load earnings
         async function loadEarnings() {
-            const res = await fetch(`${API_BASE_URL}/api/earnings/dashboard/${userData.id}`, {
+            const res = await fetch(`${API_BASE_URL}/api/earnings/dashboard/${currentUserId}`, {
                 headers: { 'Authorization': `Bearer ${userToken}` }
             });
 
@@ -735,7 +765,7 @@
         // Load referral links
         async function loadReferralLinks() {
             try {
-                const res = await fetch(`${API_BASE_URL}/api/earnings/referral-links/${userData.id}`, {
+                const res = await fetch(`${API_BASE_URL}/api/earnings/referral-links/${currentUserId}`, {
                     headers: { 'Authorization': `Bearer ${userToken}` }
                 });
 
@@ -767,7 +797,7 @@
         // Load earnings history
         async function loadEarningsHistory() {
             try {
-                const res = await fetch(`${API_BASE_URL}/api/earnings/history/${userData.id}`, {
+                const res = await fetch(`${API_BASE_URL}/api/earnings/history/${currentUserId}`, {
                     headers: { 'Authorization': `Bearer ${userToken}` }
                 });
 
@@ -809,7 +839,7 @@
         // Load withdrawals
         async function loadWithdrawals() {
             try {
-                const res = await fetch(`${API_BASE_URL}/api/earnings/withdrawals/${userData.id}`, {
+                const res = await fetch(`${API_BASE_URL}/api/earnings/withdrawals/${currentUserId}`, {
                     headers: { 'Authorization': `Bearer ${userToken}` }
                 });
 
@@ -881,18 +911,19 @@
 
                 if (!res.ok) throw new Error(data.error);
 
-                showSuccess('Withdrawal request submitted! Admin will process it soon.');
+                showSuccess('✅ Withdrawal request submitted! Admin will process it soon.');
                 closeWithdrawalModal();
                 loadWithdrawals();
+                loadEarnings();
             } catch (error) {
-                showError(error.message);
+                showError('❌ ' + error.message);
             }
         }
 
         // Utility Functions
         function copyToClipboard(text) {
             navigator.clipboard.writeText(text).then(() => {
-                showSuccess('Referral link copied!');
+                showSuccess('✅ Referral link copied!');
             });
         }
 
@@ -915,6 +946,7 @@
 
         function logout() {
             localStorage.removeItem('earningsToken');
+            localStorage.removeItem('userId');
             window.location.href = 'https://refer.pratheek.shop';
         }
 
