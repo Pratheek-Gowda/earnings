@@ -31,6 +31,13 @@ app.use(cors({
   credentials: true
 }));
 app.use(express.json());
+// Serve static files
+app.use(express.static('.'));
+
+// Serve HTML files
+app.get('/admin', (req, res) => res.sendFile(__dirname + '/admin.html'));
+app.get('/', (req, res) => res.sendFile(__dirname + '/index.html'));
+
 
 // ============= JWT CONFIG =============
 const JWT_SECRET = process.env.JWT_SECRET || 'earnings_pratheek_secret_key_2025';
