@@ -5,7 +5,7 @@ const { Pool } = require('pg');
 const bcrypt = require('bcrypt');
 const cors = require('cors');
 const jwt = require('jsonwebtoken');
-const serverless = require('serverless-http');
+const path = require('path');
 
 const app = express();
 const port = process.env.PORT || 5000;
@@ -30,14 +30,15 @@ app.use(cors({
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   credentials: true
 }));
+
 app.use(express.json());
+
 // Serve static files
 app.use(express.static('.'));
 
 // Serve HTML files
-app.get('/admin', (req, res) => res.sendFile(__dirname + '/admin.html'));
-app.get('/', (req, res) => res.sendFile(__dirname + '/index.html'));
-
+app.get('/admin', (req, res) => res.sendFile(path.join(__dirname, 'admin.html')));
+app.get('/', (req, res) => res.sendFile(path.join(__dirname, 'index.html')));
 
 // ============= JWT CONFIG =============
 const JWT_SECRET = process.env.JWT_SECRET || 'earnings_pratheek_secret_key_2025';
@@ -46,7 +47,7 @@ const JWT_EXPIRE = '7d';
 // ============= TOKEN VALIDATION MIDDLEWARE =============
 const verifyToken = (req, res, next) => {
   const token = req.headers.authorization?.split(' ')[1] || req.query.token;
-  
+
   if (!token) {
     return res.status(401).json({ success: false, error: 'No token provided' });
   }
@@ -73,54 +74,20 @@ app.get('/api/test', async (req, res) => {
     res.status(500).json({ success: false, error: error.message });
   }
 });
-require('dotenv').config();
-const express = require('express');
-const { Pool } = require('pg');
-const bcrypt = require('bcrypt');
-const cors = require('cors');
-const path = require('path');  // ADD THIS
-
-const app = express();
-const port = process.env.PORT || 5000;
-
-// Database connection
-const pool = new Pool({
-  connectionString: process.env.DATABASE_URL,
-  ssl: { rejectUnauthorized: false }
-});
-
-// Middleware
-app.use(cors({
-  origin: '*',
-  methods: ['GET', 'POST', 'PUT', 'DELETE'],
-  credentials: true
-}));
-
-app.use(express.json());
-
-// ✅ ADD THESE LINES:
-app.use(express.static('.'));
-app.get('/admin', (req, res) => res.sendFile(path.join(__dirname, 'admin.html')));
-app.get('/', (req, res) => res.sendFile(path.join(__dirname, 'index.html')));
-// END OF ADDITIONS
-
-// Test endpoint - note the /api/ prefix
-app.get('/api/test', async (req, res) => {
-  // ... rest of your code
 
 // ============= USER ENDPOINTS =============
 
 // 1. VALIDATE TOKEN - User verification
 app.post('/api/earnings/validate-token', async (req, res) => {
   const token = req.body.token || req.headers.authorization?.split(' ')[1];
-  
+
   if (!token) {
     return res.status(401).json({ success: false, error: 'No token provided' });
   }
 
   try {
     const decoded = jwt.verify(token, JWT_SECRET);
-    
+
     // Verify user exists in refer database
     const userCheck = await referPool.query(
       'SELECT id, username, email, full_name FROM users WHERE id = $1',
@@ -596,7 +563,7 @@ app.post('/api/admin/earnings/set-winners', verifyAdminToken, async (req, res) =
     // Delete previous winners for this week
     const weekStart = new Date();
     weekStart.setDate(weekStart.getDate() - weekStart.getDay());
-    
+
     await earningsPool.query(
       `DELETE FROM winners_of_week 
        WHERE week_start_date = $1::DATE`,
@@ -694,7 +661,7 @@ app.get('/api/admin/earnings/export', verifyAdminToken, async (req, res) => {
     }
 
     const csv = convertToCSV(data);
-    
+
     res.header('Content-Type', 'text/csv');
     res.header('Content-Disposition', `attachment; filename="${filename}"`);
     res.send(csv);
@@ -731,4 +698,3 @@ if (require.main === module) {
 
 // Export for serverless deployment
 module.exports = app;
-module.exports.handler = serverless(app);
