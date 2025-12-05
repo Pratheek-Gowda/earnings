@@ -73,6 +73,40 @@ app.get('/api/test', async (req, res) => {
     res.status(500).json({ success: false, error: error.message });
   }
 });
+require('dotenv').config();
+const express = require('express');
+const { Pool } = require('pg');
+const bcrypt = require('bcrypt');
+const cors = require('cors');
+const path = require('path');  // ADD THIS
+
+const app = express();
+const port = process.env.PORT || 5000;
+
+// Database connection
+const pool = new Pool({
+  connectionString: process.env.DATABASE_URL,
+  ssl: { rejectUnauthorized: false }
+});
+
+// Middleware
+app.use(cors({
+  origin: '*',
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  credentials: true
+}));
+
+app.use(express.json());
+
+// ✅ ADD THESE LINES:
+app.use(express.static('.'));
+app.get('/admin', (req, res) => res.sendFile(path.join(__dirname, 'admin.html')));
+app.get('/', (req, res) => res.sendFile(path.join(__dirname, 'index.html')));
+// END OF ADDITIONS
+
+// Test endpoint - note the /api/ prefix
+app.get('/api/test', async (req, res) => {
+  // ... rest of your code
 
 // ============= USER ENDPOINTS =============
 
