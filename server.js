@@ -3,6 +3,7 @@ require('dotenv').config();
 const express = require('express');
 const { Pool } = require('pg');
 const cors = require('cors');
+const path = require('path');
 
 const app = express();
 const port = process.env.PORT || 5000;
@@ -22,7 +23,18 @@ app.use(cors({
 
 app.use(express.json());
 
-// Test endpoint
+// Serve static files (HTML, CSS, JS)
+app.use(express.static(path.join(__dirname, 'public')));
+
+// ============= ROOT ENDPOINT =============
+
+// Root path - serve index.html
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
+
+// ============= TEST ENDPOINT =============
+
 app.get('/api/test', async (req, res) => {
     try {
         const result = await pool.query('SELECT NOW()');
@@ -259,7 +271,6 @@ app.get('/api/earnings/withdrawals/:userId', async (req, res) => {
 // 7. Request withdrawal
 app.post('/api/earnings/request-withdrawal', async (req, res) => {
     const { operator, requestedAmount, uid } = req.body;
-    const authHeader = req.headers.authorization;
     
     console.log('Withdrawal request:', { operator, requestedAmount, uid });
     
@@ -294,12 +305,13 @@ app.post('/api/earnings/request-withdrawal', async (req, res) => {
 
 // ============= ERROR HANDLING =============
 
-// 404 handler
+// 404 handler - must be last
 app.use((req, res) => {
     res.status(404).json({
         success: false,
         error: 'Endpoint not found',
-        path: req.path
+        path: req.path,
+        method: req.method
     });
 });
 
@@ -316,6 +328,7 @@ app.use((err, req, res, next) => {
 app.listen(port, () => {
     console.log(`✅ Earnings server running on port ${port}`);
     console.log(`📊 Database: ${process.env.DATABASE_URL ? 'Connected' : 'Not configured'}`);
+    console.log(`🌐 Visit: http://localhost:${port}`);
 });
 
 module.exports = app;
