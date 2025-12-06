@@ -1,23 +1,16 @@
 {
-  "name": "earnings-pratheek-shop",
+  "name": "earnings-dashboard",
   "version": "1.0.0",
-  "description": "Earnings and withdrawal management system for refer.pratheek.shop",
-  "main": "server.js",
+  "description": "Earnings Dashboard",
+  "main": "api/server.js",
   "scripts": {
-    "start": "node server.js",
-    "dev": "node server.js"
+    "dev": "node api/server.js",
+    "start": "node api/server.js"
   },
   "dependencies": {
     "express": "^4.18.2",
-    "pg": "^8.11.3",
-    "bcrypt": "^5.1.1",
+    "pg": "^8.8.0",
     "cors": "^2.8.5",
-    "dotenv": "^16.3.1",
-    "jsonwebtoken": "^9.0.2",
-    "serverless-http": "^3.2.0"
-  },
-  "devDependencies": {},
-  "engines": {
-    "node": "24.x"
+    "dotenv": "^16.0.3"
   }
 }
