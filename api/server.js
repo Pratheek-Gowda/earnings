@@ -117,35 +117,48 @@ app.post('/api/earnings/validate-token', async (req, res) => {
     }
 });
 
-// 2. Dashboard summary
+// 2. Dashboard summary (UPDATED with manual adjustments)
 app.get('/api/earnings/dashboard/:userId', async (req, res) => {
-    const { userId } = req.params;
-
+    const userId = req.params.userId;
+    
     try {
-        const earningsResult = await pool.query(`
+        // Query to get earnings by operator
+        const result = await pool.query(`
             SELECT 
-                rl.operator,
-                COUNT(r.id) AS total_referrals,
-                COUNT(CASE WHEN r.status = 'approved' THEN 1 END) AS approved_referrals_count,
-                COALESCE(
-                    SUM(CASE WHEN r.status = 'approved' THEN 100 ELSE 0 END),
-                    0
-                ) AS total_amount
+                'Airtel' as operator,
+                COALESCE(SUM(CASE WHEN r.status = 'approved' THEN 100 ELSE 0 END), 0) +
+                COALESCE((SELECT SUM(amount) FROM earnings_adjustments WHERE user_id = $1), 0) as total_amount,
+                COALESCE(COUNT(CASE WHEN r.status = 'approved' THEN 1 END), 0) as approved_referrals_count
             FROM referral_links rl
             LEFT JOIN referrals r ON rl.id = r.referral_link_id
-            WHERE rl.user_id = $1
-            GROUP BY rl.operator
+            WHERE rl.user_id = $1 AND rl.operator = 'airtel'
+            
+            UNION ALL
+            
+            SELECT 
+                'Vi' as operator,
+                COALESCE(SUM(CASE WHEN r.status = 'approved' THEN 100 ELSE 0 END), 0) +
+                COALESCE((SELECT SUM(amount) FROM earnings_adjustments WHERE user_id = $1), 0) as total_amount,
+                COALESCE(COUNT(CASE WHEN r.status = 'approved' THEN 1 END), 0) as approved_referrals_count
+            FROM referral_links rl
+            LEFT JOIN referrals r ON rl.id = r.referral_link_id
+            WHERE rl.user_id = $1 AND rl.operator = 'vi'
+            
+            UNION ALL
+            
+            SELECT 
+                'Jio' as operator,
+                COALESCE(SUM(CASE WHEN r.status = 'approved' THEN 100 ELSE 0 END), 0) +
+                COALESCE((SELECT SUM(amount) FROM earnings_adjustments WHERE user_id = $1), 0) as total_amount,
+                COALESCE(COUNT(CASE WHEN r.status = 'approved' THEN 1 END), 0) as approved_referrals_count
+            FROM referral_links rl
+            LEFT JOIN referrals r ON rl.id = r.referral_link_id
+            WHERE rl.user_id = $1 AND rl.operator = 'jio'
         `, [userId]);
-
-        let totalEarnings = 0;
-        earningsResult.rows.forEach(row => {
-            totalEarnings += parseFloat(row.total_amount || 0);
-        });
 
         res.json({
             success: true,
-            totalEarnings: totalEarnings.toFixed(2),
-            userEarnings: earningsResult.rows
+            userEarnings: result.rows
         });
     } catch (error) {
         res.status(500).json({
