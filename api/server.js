@@ -117,53 +117,39 @@ app.post('/api/earnings/validate-token', async (req, res) => {
     }
 });
 
-// 2. Dashboard summary (UPDATED with manual adjustments)
+// 2. Dashboard summary (UPDATED: Aggregated view)
 app.get('/api/earnings/dashboard/:userId', async (req, res) => {
     const userId = req.params.userId;
     
     try {
-        // Query to get earnings by operator
         const result = await pool.query(`
             SELECT 
-                'Airtel' as operator,
                 COALESCE(SUM(CASE WHEN r.status = 'approved' THEN 100 ELSE 0 END), 0) +
                 COALESCE((SELECT SUM(amount) FROM earnings_adjustments WHERE user_id = $1), 0) as total_amount,
                 COALESCE(COUNT(CASE WHEN r.status = 'approved' THEN 1 END), 0) as approved_referrals_count
-            FROM referral_links rl
-            LEFT JOIN referrals r ON rl.id = r.referral_link_id
-            WHERE rl.user_id = $1 AND rl.operator = 'airtel'
-            
-            UNION ALL
-            
-            SELECT 
-                'Vi' as operator,
-                COALESCE(SUM(CASE WHEN r.status = 'approved' THEN 100 ELSE 0 END), 0) +
-                COALESCE((SELECT SUM(amount) FROM earnings_adjustments WHERE user_id = $1), 0) as total_amount,
-                COALESCE(COUNT(CASE WHEN r.status = 'approved' THEN 1 END), 0) as approved_referrals_count
-            FROM referral_links rl
-            LEFT JOIN referrals r ON rl.id = r.referral_link_id
-            WHERE rl.user_id = $1 AND rl.operator = 'vi'
-            
-            UNION ALL
-            
-            SELECT 
-                'Jio' as operator,
-                COALESCE(SUM(CASE WHEN r.status = 'approved' THEN 100 ELSE 0 END), 0) +
-                COALESCE((SELECT SUM(amount) FROM earnings_adjustments WHERE user_id = $1), 0) as total_amount,
-                COALESCE(COUNT(CASE WHEN r.status = 'approved' THEN 1 END), 0) as approved_referrals_count
-            FROM referral_links rl
-            LEFT JOIN referrals r ON rl.id = r.referral_link_id
-            WHERE rl.user_id = $1 AND rl.operator = 'jio'
+            FROM referrals r
+            JOIN referral_links rl ON r.referral_link_id = rl.id
+            WHERE rl.user_id = $1
         `, [userId]);
+
+        const row = result.rows[0] || { total_amount: 0, approved_referrals_count: 0 };
 
         res.json({
             success: true,
-            userEarnings: result.rows
+            userEarnings: [
+                {
+                    operator: 'Airtel', // Defaulting to one operator entry as per request
+                    total_amount: row.total_amount,
+                    approved_referrals_count: row.approved_referrals_count
+                }
+            ]
         });
     } catch (error) {
+        console.error('Dashboard error:', error);
         res.status(500).json({
             success: false,
-            error: error.message
+            error: error.message,
+            stack: error.stack
         });
     }
 });
