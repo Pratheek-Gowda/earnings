@@ -32,9 +32,28 @@ app.get('/api/test', async (req, res) => {
     }
 });
 
+// ============= DEBUG ENDPOINT (TEMPORARY) =============
+
+app.get('/api/debug/table-structure', async (req, res) => {
+    try {
+        const result = await pool.query(`
+            SELECT column_name, data_type 
+            FROM information_schema.columns 
+            WHERE table_name = 'users'
+            ORDER BY ordinal_position
+        `);
+        res.json({
+            success: true,
+            columns: result.rows
+        });
+    } catch (error) {
+        res.status(500).json({ success: false, error: error.message });
+    }
+});
+
 // ============= EARNINGS ENDPOINTS =============
 
-// 1. Validate token (from refer.pratheek.shop)
+// 1. Validate token - UPDATED to use SELECT *
 app.post('/api/earnings/validate-token', async (req, res) => {
     const { token, uid } = req.body;
 
@@ -46,8 +65,9 @@ app.post('/api/earnings/validate-token', async (req, res) => {
             });
         }
 
+        // Use SELECT * to get all columns
         const userResult = await pool.query(
-            'SELECT id, name, email, phone FROM users WHERE id = $1',
+            'SELECT * FROM users WHERE id = $1',
             [uid]
         );
 
@@ -60,20 +80,15 @@ app.post('/api/earnings/validate-token', async (req, res) => {
 
         const user = userResult.rows[0];
 
+        // Return all user data so we can see what columns exist
         res.json({
             success: true,
-            user: {
-                id: user.id,
-                name: user.name,
-                email: user.email,
-                phone: user.phone
-            }
+            user: user
         });
     } catch (error) {
         res.status(500).json({ success: false, error: error.message });
     }
 });
-
 
 // 2. Dashboard summary
 app.get('/api/earnings/dashboard/:userId', async (req, res) => {
@@ -116,8 +131,6 @@ app.get('/api/earnings/winners-of-week', async (req, res) => {
         const result = await pool.query(`
             SELECT 
                 u.id,
-                u.username,
-                u.full_name,
                 COALESCE(
                     SUM(CASE WHEN r.status = 'approved' THEN 100 ELSE 0 END),
                     0
@@ -129,7 +142,7 @@ app.get('/api/earnings/winners-of-week', async (req, res) => {
             LEFT JOIN referral_links rl ON u.id = rl.user_id
             LEFT JOIN referrals r ON rl.id = r.referral_link_id
             WHERE r.created_at >= CURRENT_DATE - INTERVAL '7 days'
-            GROUP BY u.id, u.username, u.full_name
+            GROUP BY u.id
             HAVING SUM(CASE WHEN r.status = 'approved' THEN 100 ELSE 0 END) > 0
             ORDER BY total_earnings DESC
             LIMIT 10
@@ -261,24 +274,6 @@ app.use((err, req, res, next) => {
         error: err.message
     });
 });
-// Add this TEMPORARY endpoint to check your table structure
-app.get('/api/debug/table-structure', async (req, res) => {
-    try {
-        const result = await pool.query(`
-            SELECT column_name, data_type 
-            FROM information_schema.columns 
-            WHERE table_name = 'users'
-            ORDER BY ordinal_position
-        `);
-        res.json({
-            success: true,
-            columns: result.rows
-        });
-    } catch (error) {
-        res.status(500).json({ success: false, error: error.message });
-    }
-});
-
 
 // ============= START SERVER =============
 
