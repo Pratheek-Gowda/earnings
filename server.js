@@ -47,7 +47,7 @@ app.post('/api/earnings/validate-token', async (req, res) => {
         }
 
         const userResult = await pool.query(
-            'SELECT id, username, email, full_name FROM users WHERE id = $1',
+            'SELECT id, name, email, phone FROM users WHERE id = $1',
             [uid]
         );
 
@@ -64,15 +64,16 @@ app.post('/api/earnings/validate-token', async (req, res) => {
             success: true,
             user: {
                 id: user.id,
-                username: user.username,
+                name: user.name,
                 email: user.email,
-                fullName: user.full_name
+                phone: user.phone
             }
         });
     } catch (error) {
         res.status(500).json({ success: false, error: error.message });
     }
 });
+
 
 // 2. Dashboard summary
 app.get('/api/earnings/dashboard/:userId', async (req, res) => {
