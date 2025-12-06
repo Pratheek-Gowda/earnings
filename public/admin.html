@@ -310,174 +310,6 @@
             color: #fca5a5;
         }
 
-        .status-processed {
-            background: rgba(59, 130, 246, 0.2);
-            color: #93c5fd;
-        }
-
-        /* Modal */
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.7);
-            z-index: 1000;
-            align-items: center;
-            justify-content: center;
-            backdrop-filter: blur(5px);
-        }
-
-        .modal.active {
-            display: flex;
-        }
-
-        .modal-content {
-            background: #0f172a;
-            border: 1px solid rgba(148, 163, 184, 0.3);
-            padding: 40px;
-            border-radius: 12px;
-            width: 90%;
-            max-width: 600px;
-            max-height: 80vh;
-            overflow-y: auto;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
-        }
-
-        .modal-content h3 {
-            color: #60a5fa;
-            margin-bottom: 20px;
-        }
-
-        .form-group {
-            margin-bottom: 15px;
-        }
-
-        .form-group label {
-            display: block;
-            color: #cbd5e1;
-            margin-bottom: 8px;
-            font-weight: 600;
-        }
-
-        .form-group input,
-        .form-group select,
-        .form-group textarea {
-            width: 100%;
-            background: rgba(30, 41, 59, 0.8);
-            border: 1px solid rgba(148, 163, 184, 0.2);
-            color: #e2e8f0;
-            padding: 12px;
-            border-radius: 8px;
-            font-size: 1em;
-        }
-
-        .form-group input:focus,
-        .form-group select:focus,
-        .form-group textarea:focus {
-            outline: none;
-            border-color: #60a5fa;
-            background: rgba(30, 41, 59, 0.95);
-        }
-
-        .form-row {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-        }
-
-        .modal-buttons {
-            display: flex;
-            gap: 10px;
-            margin-top: 25px;
-        }
-
-        .btn {
-            flex: 1;
-            padding: 12px;
-            border: none;
-            border-radius: 8px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-
-        .btn-primary {
-            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
-            color: white;
-        }
-
-        .btn-primary:hover {
-            background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
-        }
-
-        .btn-secondary {
-            background: rgba(148, 163, 184, 0.2);
-            color: #cbd5e1;
-            border: 1px solid rgba(148, 163, 184, 0.3);
-        }
-
-        .btn-secondary:hover {
-            background: rgba(148, 163, 184, 0.3);
-        }
-
-        /* Winners Section */
-        .winners-section {
-            background: linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(139, 92, 246, 0.1) 100%);
-            border: 1px solid rgba(59, 130, 246, 0.3);
-            padding: 25px;
-            border-radius: 12px;
-            margin-bottom: 30px;
-        }
-
-        .winners-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 20px;
-        }
-
-        .winner-item {
-            background: rgba(30, 41, 59, 0.8);
-            border: 1px solid rgba(148, 163, 184, 0.2);
-            padding: 20px;
-            border-radius: 10px;
-            text-align: center;
-        }
-
-        .winner-position {
-            font-size: 2em;
-            font-weight: bold;
-            color: #fbbf24;
-            margin-bottom: 10px;
-        }
-
-        .winner-name {
-            color: #60a5fa;
-            margin-bottom: 5px;
-        }
-
-        .winner-earnings {
-            color: #86efac;
-            margin-bottom: 10px;
-        }
-
-        .export-btn {
-            background: #10b981;
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: 600;
-            transition: background 0.3s;
-        }
-
-        .export-btn:hover {
-            background: #059669;
-        }
-
         @media (max-width: 768px) {
             .admin-container {
                 grid-template-columns: 1fr;
@@ -496,15 +328,6 @@
             .stats-grid {
                 grid-template-columns: 1fr;
             }
-
-            .form-row {
-                grid-template-columns: 1fr;
-            }
-
-            .modal-content {
-                width: 95%;
-                padding: 20px;
-            }
         }
     </style>
 </head>
@@ -512,7 +335,7 @@
     <!-- Login Form -->
     <div id="loginContainer" class="login-container">
         <div class="login-box">
-            <h1>🔐 Admin Login</h1>
+            <h1>Admin Login</h1>
             <div id="loginError"></div>
             <div class="form-group">
                 <label>Username</label>
@@ -530,14 +353,10 @@
     <div id="adminContainer" class="admin-container">
         <!-- Sidebar -->
         <div class="sidebar">
-            <h2>📊 Admin</h2>
+            <h2>Admin</h2>
             <div class="nav-item active" onclick="showSection('dashboard')">Dashboard</div>
-            <div class="nav-item" onclick="showSection('withdrawals')">💸 Withdrawals</div>
-            <div class="nav-item" onclick="showSection('users')">👥 Users</div>
-            <div class="nav-item" onclick="showSection('adjustments')">✏️ Adjustments</div>
-            <div class="nav-item" onclick="showSection('winners')">🏆 Winners</div>
-            <div class="nav-item" onclick="showSection('export')">📥 Export</div>
-            <div class="logout-link" onclick="adminLogout()">Logout</div>
+            <div class="nav-item" onclick="showSection('referrals')">Referrals</div>
+            <div class="nav-item logout-link" onclick="adminLogout()">Logout</div>
         </div>
 
         <!-- Main Content -->
@@ -550,279 +369,101 @@
 
                 <div class="stats-grid">
                     <div class="stat-card">
-                        <div class="stat-label">Total Users</div>
-                        <div class="stat-number" id="totalUsers">0</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-label">Pending Withdrawals</div>
-                        <div class="stat-number" id="pendingCount">0</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-label">Total Earnings Managed</div>
+                        <div class="stat-label">Total Earnings</div>
                         <div class="stat-number">₹<span id="totalEarnings">0</span></div>
                     </div>
                     <div class="stat-card">
-                        <div class="stat-label">Processed Withdrawals</div>
-                        <div class="stat-number" id="processedCount">0</div>
+                        <div class="stat-label">Pending Referrals</div>
+                        <div class="stat-number" id="pendingCount">0</div>
                     </div>
-                </div>
-
-                <h3 style="color: #60a5fa; margin-bottom: 20px;">📋 Quick Actions</h3>
-                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
-                    <button class="action-btn" style="background: #3b82f6; width: 100%; padding: 12px;" onclick="showSection('withdrawals')">
-                        Review Withdrawals
-                    </button>
-                    <button class="action-btn" style="background: #10b981; width: 100%; padding: 12px;" onclick="showSection('winners')">
-                        Select Winners
-                    </button>
-                    <button class="action-btn" style="background: #f59e0b; width: 100%; padding: 12px;" onclick="showSection('adjustments')">
-                        Adjust Earnings
-                    </button>
+                    <div class="stat-card">
+                        <div class="stat-label">Approved Referrals</div>
+                        <div class="stat-number" id="approvedCount">0</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Total Referrals</div>
+                        <div class="stat-number" id="totalCount">0</div>
+                    </div>
                 </div>
             </div>
 
-            <!-- Withdrawals Section -->
-            <div id="withdrawals" class="content-section">
+            <!-- Referrals Section -->
+            <div id="referrals" class="content-section">
                 <div class="section-header">
-                    <h2>💸 Withdrawal Requests</h2>
+                    <h2>All Referrals</h2>
                 </div>
-
-                <div id="withdrawalMessage"></div>
 
                 <div class="table-container">
                     <table>
                         <thead>
                             <tr>
-                                <th>User</th>
-                                <th>Operator</th>
-                                <th>Amount</th>
+                                <th>ID</th>
                                 <th>Status</th>
-                                <th>Date</th>
+                                <th>Customer Name</th>
+                                <th>Operator</th>
+                                <th>Referrer</th>
+                                <th>Submitted</th>
                                 <th>Actions</th>
                             </tr>
                         </thead>
-                        <tbody id="withdrawalTable">
-                            <tr><td colspan="6" style="text-align: center; color: #94a3b8;">Loading...</td></tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-
-            <!-- Users Section -->
-            <div id="users" class="content-section">
-                <div class="section-header">
-                    <h2>👥 All Users</h2>
-                </div>
-
-                <div class="table-container">
-                    <table>
-                        <thead>
+                        <tbody id="tableBody">
                             <tr>
-                                <th>Username</th>
-                                <th>Total Earnings</th>
-                                <th>Operators</th>
-                                <th>Actions</th>
+                                <td colspan="7" style="text-align: center; color: #94a3b8;">Loading referrals...</td>
                             </tr>
-                        </thead>
-                        <tbody id="usersTable">
-                            <tr><td colspan="4" style="text-align: center; color: #94a3b8;">Loading...</td></tr>
                         </tbody>
                     </table>
                 </div>
-            </div>
-
-            <!-- Adjustments Section -->
-            <div id="adjustments" class="content-section">
-                <div class="section-header">
-                    <h2>✏️ Adjust Earnings</h2>
-                </div>
-
-                <div id="adjustmentMessage"></div>
-
-                <div style="background: rgba(30, 41, 59, 0.8); border: 1px solid rgba(148, 163, 184, 0.2); padding: 25px; border-radius: 12px; margin-bottom: 30px;">
-                    <div class="form-group">
-                        <label>Select User</label>
-                        <input type="text" id="searchUser" placeholder="Search username..." onkeyup="searchUsers()">
-                        <div id="userSearchResults" style="margin-top: 10px;"></div>
-                    </div>
-
-                    <div id="adjustmentForm" style="display: none;">
-                        <div class="form-group">
-                            <label>Selected User: <span id="selectedUsername" style="color: #60a5fa;"></span></label>
-                        </div>
-                        <div class="form-group">
-                            <label>Adjustment Type</label>
-                            <select id="adjustmentType">
-                                <option value="add">Add Earnings</option>
-                                <option value="subtract">Subtract Earnings</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label>Amount</label>
-                            <input type="number" id="adjustmentAmount" placeholder="Enter amount" min="1" step="0.01">
-                        </div>
-                        <div class="form-group">
-                            <label>Reason</label>
-                            <textarea id="adjustmentReason" placeholder="Reason for adjustment" rows="3"></textarea>
-                        </div>
-                        <button class="action-btn" style="width: 100%; padding: 12px;" onclick="submitAdjustment()">Apply Adjustment</button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Winners Section -->
-            <div id="winners" class="content-section">
-                <div class="section-header">
-                    <h2>🏆 Winners of the Week</h2>
-                </div>
-
-                <div id="winnerMessage"></div>
-
-                <div class="winners-section">
-                    <h3 style="color: #60a5fa; margin-bottom: 20px;">Current Winners</h3>
-                    <div class="winners-grid" id="currentWinners">
-                        <div style="grid-column: 1/-1; text-align: center; color: #94a3b8; padding: 20px;">Loading winners...</div>
-                    </div>
-                </div>
-
-                <h3 style="color: #60a5fa; margin-bottom: 20px; margin-top: 30px;">Select New Winners</h3>
-                <div style="background: rgba(30, 41, 59, 0.8); border: 1px solid rgba(148, 163, 184, 0.2); padding: 25px; border-radius: 12px;">
-                    <div class="form-group">
-                        <label>Top Users by Earnings</label>
-                        <div id="topUsersList" style="max-height: 300px; overflow-y: auto;"></div>
-                    </div>
-
-                    <div style="margin-top: 20px;">
-                        <h4 style="color: #a78bfa; margin-bottom: 15px;">Selected Winners</h4>
-                        <div id="selectedWinners"></div>
-                        <button class="action-btn" style="width: 100%; padding: 12px; margin-top: 15px; background: #10b981;" onclick="submitWinners()">
-                            Save Winners
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Export Section -->
-            <div id="export" class="content-section">
-                <div class="section-header">
-                    <h2>📥 Export Data</h2>
-                </div>
-
-                <div style="background: rgba(30, 41, 59, 0.8); border: 1px solid rgba(148, 163, 184, 0.2); padding: 25px; border-radius: 12px;">
-                    <h3 style="color: #60a5fa; margin-bottom: 20px;">Choose what to export</h3>
-                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
-                        <button class="export-btn" onclick="exportData('all-users')">
-                            Export All Users Earnings
-                        </button>
-                        <button class="export-btn" onclick="exportData('withdrawals')">
-                            Export Withdrawals
-                        </button>
-                        <button class="export-btn" onclick="exportData('adjustments')">
-                            Export Adjustments
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Withdrawal Action Modal -->
-    <div id="withdrawalActionModal" class="modal">
-        <div class="modal-content">
-            <h3>Process Withdrawal</h3>
-            <div class="form-group">
-                <label>Withdrawal ID: <span id="modalWithdrawalId" style="color: #60a5fa;"></span></label>
-            </div>
-            <div class="form-group">
-                <label>User: <span id="modalUsername" style="color: #60a5fa;"></span></label>
-            </div>
-            <div class="form-group">
-                <label>Amount: <span id="modalAmount" style="color: #10b981;"></span></label>
-            </div>
-            <div class="form-group">
-                <label>Action</label>
-                <select id="actionSelect">
-                    <option value="">Choose action...</option>
-                    <option value="approved">Approve</option>
-                    <option value="rejected">Reject</option>
-                </select>
-            </div>
-            <div class="form-group">
-                <label>Notes</label>
-                <textarea id="actionNotes" placeholder="Optional notes" rows="3"></textarea>
-            </div>
-            <div class="modal-buttons">
-                <button class="btn btn-secondary" onclick="closeWithdrawalActionModal()">Cancel</button>
-                <button class="btn btn-primary" onclick="processWithdrawalAction()">Submit</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- User Details Modal -->
-    <div id="userDetailsModal" class="modal">
-        <div class="modal-content">
-            <h3>User Performance - <span id="modalUserName" style="color: #60a5fa;"></span></h3>
-            <div style="margin-top: 20px;">
-                <h4 style="color: #a78bfa; margin-bottom: 15px;">Earnings by Operator</h4>
-                <div id="userEarningsDetails"></div>
-            </div>
-            <div style="margin-top: 20px;">
-                <h4 style="color: #a78bfa; margin-bottom: 15px;">Recent Activity</h4>
-                <div style="max-height: 300px; overflow-y: auto;" id="userActivity"></div>
-            </div>
-            <div class="modal-buttons">
-                <button class="btn btn-secondary" onclick="closeUserDetailsModal()">Close</button>
             </div>
         </div>
     </div>
 
     <script>
-        const API_BASE_URL = window.location.origin;
-        let adminToken = null;
-        let selectedUsers = [];
+        const APIURL = 'https://earnings.pratheek.shop/api/';
+        let currentAdmin = null;
 
         // Admin Login
         async function adminLogin() {
-            const username = document.getElementById('username').value;
+            const username = document.getElementById('username').value.trim();
             const password = document.getElementById('password').value;
 
             if (!username || !password) {
-                showLoginError('Please enter credentials');
+                showLoginError('Please fill all fields');
                 return;
             }
 
             try {
-                const res = await fetch(`${API_BASE_URL}/api/admin/earnings/login`, {
+                const response = await fetch(APIURL + 'admin/login', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ username, password })
                 });
 
-                const data = await res.json();
+                const data = await response.json();
 
-                if (!res.ok) throw new Error(data.error);
-
-                adminToken = data.adminToken;
-                localStorage.setItem('adminToken', adminToken);
-
-                document.getElementById('loginContainer').style.display = 'none';
-                document.getElementById('adminContainer').style.display = 'grid';
-
-                loadDashboard();
+                if (data.success) {
+                    currentAdmin = data.admin;
+                    localStorage.setItem('admin', JSON.stringify(data.admin));
+                    document.getElementById('loginContainer').style.display = 'none';
+                    document.getElementById('adminContainer').style.display = 'grid';
+                    loadDashboard();
+                } else {
+                    showLoginError(data.error);
+                }
             } catch (error) {
-                showLoginError(error.message);
+                showLoginError('Network error: ' + error.message);
             }
         }
 
         // Check if already logged in
-        window.addEventListener('DOMContentLoaded', () => {
-            adminToken = localStorage.getItem('adminToken');
-            if (adminToken) {
+        window.onload = function() {
+            const savedAdmin = localStorage.getItem('admin');
+            if (savedAdmin) {
+                currentAdmin = JSON.parse(savedAdmin);
                 document.getElementById('loginContainer').style.display = 'none';
                 document.getElementById('adminContainer').style.display = 'grid';
                 loadDashboard();
             }
-        });
+        };
 
         // Show Section
         function showSection(section) {
@@ -832,406 +473,150 @@
             document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
             event.target.classList.add('active');
 
-            if (section === 'withdrawals') loadWithdrawals();
-            else if (section === 'users') loadUsers();
-            else if (section === 'winners') loadWinners();
+            if (section === 'referrals') {
+                loadReferrals();
+            }
         }
 
         // Load Dashboard
         async function loadDashboard() {
             try {
-                const [users, withdrawals] = await Promise.all([
-                    fetch(`${API_BASE_URL}/api/admin/earnings/all-users`, {
-                        headers: { 'Authorization': `Bearer ${adminToken}` }
-                    }).then(r => r.json()),
-                    fetch(`${API_BASE_URL}/api/admin/earnings/pending-withdrawals`, {
-                        headers: { 'Authorization': `Bearer ${adminToken}` }
-                    }).then(r => r.json())
-                ]);
+                const response = await fetch(APIURL + 'earnings/dashboard/1');
+                const data = await response.json();
 
-                document.getElementById('totalUsers').textContent = users.totalUsers || 0;
-                document.getElementById('pendingCount').textContent = withdrawals.count || 0;
-                document.getElementById('processedCount').textContent = (withdrawals.count * 2) || 0;
+                if (data.success) {
+                    let totalEarnings = 0;
+                    let totalReferrals = 0;
+                    let approvedReferrals = 0;
 
-                const totalEarnings = users.users?.reduce((sum, u) => sum + parseFloat(u.total_earnings || 0), 0) || 0;
-                document.getElementById('totalEarnings').textContent = totalEarnings.toFixed(2);
+                    data.userEarnings.forEach(row => {
+                        totalEarnings += parseFloat(row.total_amount || 0);
+                        totalReferrals += parseInt(row.total_referrals || 0);
+                        approvedReferrals += parseInt(row.approved_referrals_count || 0);
+                    });
+
+                    document.getElementById('totalEarnings').textContent = totalEarnings.toFixed(0);
+                    document.getElementById('approvedCount').textContent = approvedReferrals;
+                    document.getElementById('pendingCount').textContent = totalReferrals - approvedReferrals;
+                    document.getElementById('totalCount').textContent = totalReferrals;
+                }
             } catch (error) {
                 console.error('Error loading dashboard:', error);
             }
         }
 
-        // Load Withdrawals
-        async function loadWithdrawals() {
+        // Load Referrals
+        async function loadReferrals() {
             try {
-                const res = await fetch(`${API_BASE_URL}/api/admin/earnings/withdrawals`, {
-                    headers: { 'Authorization': `Bearer ${adminToken}` }
-                });
+                const response = await fetch(APIURL + 'admin/all-referrals');
+                const data = await response.json();
 
-                const data = await res.json();
-                const table = document.getElementById('withdrawalTable');
-                table.innerHTML = '';
+                const tbody = document.getElementById('tableBody');
+                tbody.innerHTML = '';
 
-                if (!data.allWithdrawals || data.allWithdrawals.length === 0) {
-                    table.innerHTML = '<tr><td colspan="6" style="text-align: center; color: #94a3b8;">No withdrawals yet</td></tr>';
+                if (!data.success || !data.allReferrals || data.allReferrals.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; color: #94a3b8;">No referrals found</td></tr>';
                     return;
                 }
 
-                data.allWithdrawals.forEach(w => {
-                    const row = document.createElement('tr');
-                    row.innerHTML = `
-                        <td>${w.username}</td>
-                        <td>${w.operator}</td>
-                        <td>₹${parseFloat(w.requested_amount).toFixed(2)}</td>
-                        <td><span class="status-badge status-${w.status}">${w.status.toUpperCase()}</span></td>
-                        <td>${new Date(w.requested_at).toLocaleDateString()}</td>
-                        <td>
-                            ${w.status === 'pending' ? `
-                                <button class="action-btn" onclick="openWithdrawalActionModal(${w.id}, '${w.username}', ${w.requested_amount})">Action</button>
-                            ` : `
-                                <span style="color: #94a3b8;">-</span>
-                            `}
-                        </td>
-                    `;
-                    table.appendChild(row);
-                });
-            } catch (error) {
-                console.error('Error loading withdrawals:', error);
-            }
-        }
+                data.allReferrals.forEach(r => {
+                    const date = new Date(r.created_at);
+                    const formattedDate = date.toLocaleDateString('en-IN') + ' ' + date.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' });
 
-        // Load Users
-        async function loadUsers() {
-            try {
-                const res = await fetch(`${API_BASE_URL}/api/admin/earnings/all-users`, {
-                    headers: { 'Authorization': `Bearer ${adminToken}` }
-                });
+                    let statusBadge = `<span class="status-badge status-${r.status}">${r.status.toUpperCase()}</span>`;
 
-                const data = await res.json();
-                const table = document.getElementById('usersTable');
-                table.innerHTML = '';
-
-                if (!data.users || data.users.length === 0) {
-                    table.innerHTML = '<tr><td colspan="4" style="text-align: center; color: #94a3b8;">No users yet</td></tr>';
-                    return;
-                }
-
-                data.users.forEach(u => {
-                    const row = document.createElement('tr');
-                    row.innerHTML = `
-                        <td>${u.username}</td>
-                        <td>₹${parseFloat(u.total_earnings).toFixed(2)}</td>
-                        <td>${u.operators_count} operators</td>
-                        <td>
-                            <button class="action-btn" onclick="openUserDetailsModal(${u.user_id}, '${u.username}')">View</button>
-                        </td>
-                    `;
-                    table.appendChild(row);
-                });
-            } catch (error) {
-                console.error('Error loading users:', error);
-            }
-        }
-
-        // Load Winners
-        async function loadWinners() {
-            try {
-                const res = await fetch(`${API_BASE_URL}/api/admin/earnings/current-winners`, {
-                    headers: { 'Authorization': `Bearer ${adminToken}` }
-                });
-
-                const data = await res.json();
-                const currentWinners = document.getElementById('currentWinners');
-                currentWinners.innerHTML = '';
-
-                if (!data.winners || data.winners.length === 0) {
-                    currentWinners.innerHTML = '<div style="grid-column: 1/-1; text-align: center; color: #94a3b8; padding: 20px;">No winners selected yet</div>';
-                } else {
-                    data.winners.forEach(w => {
-                        const card = document.createElement('div');
-                        card.className = 'winner-item';
-                        card.innerHTML = `
-                            <div class="winner-position">#${w.position}</div>
-                            <div class="winner-name">${w.username}</div>
-                            <div class="winner-earnings">₹${parseFloat(w.total_earnings).toFixed(2)}</div>
+                    let actions = '';
+                    if (r.status === 'pending') {
+                        actions = `
+                            <button class="action-btn success" onclick="approveReferral(${r.id})">Approve</button>
+                            <button class="action-btn danger" onclick="rejectReferral(${r.id})">Reject</button>
                         `;
-                        currentWinners.appendChild(card);
-                    });
-                }
+                    }
 
-                // Load top users
-                const usersRes = await fetch(`${API_BASE_URL}/api/admin/earnings/all-users`, {
-                    headers: { 'Authorization': `Bearer ${adminToken}` }
-                });
-
-                const usersData = await usersRes.json();
-                const topUsers = usersData.users.sort((a, b) => parseFloat(b.total_earnings) - parseFloat(a.total_earnings)).slice(0, 10);
-
-                const listDiv = document.getElementById('topUsersList');
-                listDiv.innerHTML = '';
-
-                topUsers.forEach(u => {
-                    const div = document.createElement('div');
-                    div.style.cssText = 'padding: 10px; background: rgba(15, 23, 42, 0.5); border-radius: 6px; margin-bottom: 8px; cursor: pointer; border: 1px solid rgba(96, 165, 250, 0.2);';
-                    div.textContent = `${u.username} - ₹${parseFloat(u.total_earnings).toFixed(2)}`;
-                    div.onclick = () => selectWinner(u);
-                    listDiv.appendChild(div);
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td><strong>${r.id}</strong></td>
+                        <td>${statusBadge}</td>
+                        <td><strong>${r.referred_name}</strong><br><small style="color: #94a3b8;">${r.referred_email || 'No email'}</small></td>
+                        <td><span style="color: #fbbf24; font-weight: bold;">${r.operator.toUpperCase()}</span></td>
+                        <td><strong>${r.referrer_username}</strong></td>
+                        <td><small>${formattedDate}</small></td>
+                        <td>${actions}</td>
+                    `;
+                    tbody.appendChild(row);
                 });
             } catch (error) {
-                console.error('Error loading winners:', error);
+                console.error('Error loading referrals:', error);
             }
         }
 
-        // Winner selection
-        function selectWinner(user) {
-            if (selectedUsers.length < 2 && !selectedUsers.find(u => u.user_id === user.user_id)) {
-                selectedUsers.push(user);
-                displaySelectedWinners();
-            }
-        }
-
-        function displaySelectedWinners() {
-            const div = document.getElementById('selectedWinners');
-            div.innerHTML = selectedUsers.map((u, i) => `
-                <div style="padding: 10px; background: rgba(96, 165, 250, 0.1); border-left: 3px solid #60a5fa; margin-bottom: 8px; border-radius: 4px;">
-                    Position #${i + 1}: ${u.username} - ₹${parseFloat(u.total_earnings).toFixed(2)}
-                    <button style="float: right; background: #ef4444; color: white; border: none; padding: 4px 8px; border-radius: 4px; cursor: pointer;" onclick="removeWinner(${i})">Remove</button>
-                </div>
-            `).join('');
-        }
-
-        function removeWinner(index) {
-            selectedUsers.splice(index, 1);
-            displaySelectedWinners();
-        }
-
-        async function submitWinners() {
-            if (selectedUsers.length !== 2) {
-                alert('Please select exactly 2 winners');
-                return;
-            }
+        // Approve Referral
+        async function approveReferral(id) {
+            if (!confirm('Approve this referral? Will credit ₹100 to referrer.')) return;
 
             try {
-                const res = await fetch(`${API_BASE_URL}/api/admin/earnings/set-winners`, {
+                const response = await fetch(APIURL + `admin/approve-referral/${id}`, {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${adminToken}`
-                    },
-                    body: JSON.stringify({
-                        winner1: selectedUsers[0],
-                        winner2: selectedUsers[1]
-                    })
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ status: 'approved', adminUsername: currentAdmin.username })
                 });
 
-                const data = await res.json();
-                if (res.ok) {
-                    document.getElementById('winnerMessage').innerHTML = '<div class="success">✓ Winners updated successfully!</div>';
-                    selectedUsers = [];
-                    loadWinners();
-                    setTimeout(() => {
-                        document.getElementById('winnerMessage').innerHTML = '';
-                    }, 3000);
+                const data = await response.json();
+
+                if (data.success) {
+                    alert('Referral approved!');
+                    loadReferrals();
+                    loadDashboard();
                 } else {
-                    throw new Error(data.error);
+                    alert('Error: ' + data.error);
                 }
             } catch (error) {
-                document.getElementById('winnerMessage').innerHTML = `<div class="error">Error: ${error.message}</div>`;
+                alert('Network error: ' + error.message);
             }
         }
 
-        // Search Users
-        let allUsers = [];
-        let selectedAdjustmentUser = null;
-
-        async function searchUsers() {
-            const searchTerm = document.getElementById('searchUser').value.toLowerCase();
-
-            if (!allUsers.length) {
-                const res = await fetch(`${API_BASE_URL}/api/admin/earnings/all-users`, {
-                    headers: { 'Authorization': `Bearer ${adminToken}` }
-                });
-                const data = await res.json();
-                allUsers = data.users || [];
-            }
-
-            const filtered = allUsers.filter(u => u.username.toLowerCase().includes(searchTerm));
-            const resultsDiv = document.getElementById('userSearchResults');
-            resultsDiv.innerHTML = '';
-
-            filtered.slice(0, 5).forEach(u => {
-                const div = document.createElement('div');
-                div.style.cssText = 'padding: 8px; background: rgba(15, 23, 42, 0.5); border-radius: 4px; margin-bottom: 5px; cursor: pointer; border: 1px solid rgba(96, 165, 250, 0.2);';
-                div.textContent = `${u.username} - ₹${parseFloat(u.total_earnings).toFixed(2)}`;
-                div.onclick = () => selectUserForAdjustment(u);
-                resultsDiv.appendChild(div);
-            });
-        }
-
-        function selectUserForAdjustment(user) {
-            selectedAdjustmentUser = user;
-            document.getElementById('adjustmentForm').style.display = 'block';
-            document.getElementById('selectedUsername').textContent = user.username;
-            document.getElementById('searchUser').value = user.username;
-            document.getElementById('userSearchResults').innerHTML = '';
-        }
-
-        async function submitAdjustment() {
-            if (!selectedAdjustmentUser) {
-                alert('Please select a user');
-                return;
-            }
-
-            const amount = parseFloat(document.getElementById('adjustmentAmount').value);
-            const type = document.getElementById('adjustmentType').value;
-            const reason = document.getElementById('adjustmentReason').value;
-
-            if (!amount || !reason) {
-                alert('Please fill in all fields');
-                return;
-            }
+        // Reject Referral
+        async function rejectReferral(id) {
+            if (!confirm('Reject this referral?')) return;
 
             try {
-                const res = await fetch(`${API_BASE_URL}/api/admin/earnings/adjust-earnings`, {
+                const response = await fetch(APIURL + `admin/approve-referral/${id}`, {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${adminToken}`
-                    },
-                    body: JSON.stringify({
-                        userId: selectedAdjustmentUser.user_id,
-                        username: selectedAdjustmentUser.username,
-                        adjustmentAmount: amount,
-                        adjustmentType: type,
-                        reason: reason
-                    })
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ status: 'rejected', adminUsername: currentAdmin.username })
                 });
 
-                const data = await res.json();
-                if (res.ok) {
-                    document.getElementById('adjustmentMessage').innerHTML = '<div class="success">✓ Adjustment recorded!</div>';
-                    document.getElementById('adjustmentForm').style.display = 'none';
-                    document.getElementById('adjustmentAmount').value = '';
-                    document.getElementById('adjustmentReason').value = '';
-                    selectedAdjustmentUser = null;
-                    setTimeout(() => {
-                        document.getElementById('adjustmentMessage').innerHTML = '';
-                    }, 3000);
+                const data = await response.json();
+
+                if (data.success) {
+                    alert('Referral rejected!');
+                    loadReferrals();
+                    loadDashboard();
+                } else {
+                    alert('Error: ' + data.error);
                 }
             } catch (error) {
-                document.getElementById('adjustmentMessage').innerHTML = `<div class="error">Error: ${error.message}</div>`;
-            }
-        }
-
-        // Withdrawal Action Modal
-        let currentWithdrawalId = null;
-
-        function openWithdrawalActionModal(id, username, amount) {
-            currentWithdrawalId = id;
-            document.getElementById('modalWithdrawalId').textContent = id;
-            document.getElementById('modalUsername').textContent = username;
-            document.getElementById('modalAmount').textContent = `₹${amount.toFixed(2)}`;
-            document.getElementById('withdrawalActionModal').classList.add('active');
-        }
-
-        function closeWithdrawalActionModal() {
-            document.getElementById('withdrawalActionModal').classList.remove('active');
-        }
-
-        async function processWithdrawalAction() {
-            const action = document.getElementById('actionSelect').value;
-            const notes = document.getElementById('actionNotes').value;
-
-            if (!action) {
-                alert('Please select an action');
-                return;
-            }
-
-            try {
-                const res = await fetch(`${API_BASE_URL}/api/admin/earnings/approve-withdrawal/${currentWithdrawalId}`, {
-                    method: 'PUT',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${adminToken}`
-                    },
-                    body: JSON.stringify({
-                        status: action,
-                        adminNotes: notes
-                    })
-                });
-
-                const data = await res.json();
-                if (res.ok) {
-                    document.getElementById('withdrawalMessage').innerHTML = '<div class="success">✓ Withdrawal processed!</div>';
-                    closeWithdrawalActionModal();
-                    loadWithdrawals();
-                    setTimeout(() => {
-                        document.getElementById('withdrawalMessage').innerHTML = '';
-                    }, 3000);
-                }
-            } catch (error) {
-                alert('Error: ' + error.message);
-            }
-        }
-
-        // User Details Modal
-        async function openUserDetailsModal(userId, username) {
-            document.getElementById('modalUserName').textContent = username;
-
-            try {
-                const res = await fetch(`${API_BASE_URL}/api/admin/earnings/user/${userId}`, {
-                    headers: { 'Authorization': `Bearer ${adminToken}` }
-                });
-
-                const data = await res.json();
-
-                const earningsDiv = document.getElementById('userEarningsDetails');
-                earningsDiv.innerHTML = data.earnings.map(e => `
-                    <div style="padding: 10px; background: rgba(15, 23, 42, 0.5); border-radius: 4px; margin-bottom: 8px;">
-                        <strong>${e.operator}</strong>: ₹${parseFloat(e.total_amount).toFixed(2)} (${e.approved_referrals_count} referrals)
-                    </div>
-                `).join('');
-
-                const activityDiv = document.getElementById('userActivity');
-                activityDiv.innerHTML = data.earningsHistory.slice(0, 10).map(h => `
-                    <div style="padding: 8px; border-bottom: 1px solid rgba(148, 163, 184, 0.1); font-size: 0.9em;">
-                        ${new Date(h.created_at).toLocaleDateString()} - ${h.operator} - ₹${parseFloat(h.amount_earned).toFixed(2)}
-                    </div>
-                `).join('');
-
-                document.getElementById('userDetailsModal').classList.add('active');
-            } catch (error) {
-                alert('Error loading user details');
-            }
-        }
-
-        function closeUserDetailsModal() {
-            document.getElementById('userDetailsModal').classList.remove('active');
-        }
-
-        // Export Data
-        async function exportData(type) {
-            try {
-                window.location.href = `${API_BASE_URL}/api/admin/earnings/export?type=${type}&adminToken=${adminToken}`;
-            } catch (error) {
-                alert('Error exporting data');
+                alert('Network error: ' + error.message);
             }
         }
 
         // Logout
         function adminLogout() {
-            localStorage.removeItem('adminToken');
-            adminToken = null;
-            document.getElementById('adminContainer').style.display = 'none';
-            document.getElementById('loginContainer').style.display = 'flex';
-            document.getElementById('username').value = 'pratheek';
-            document.getElementById('password').value = '';
+            if (confirm('Are you sure you want to logout?')) {
+                currentAdmin = null;
+                localStorage.removeItem('admin');
+                document.getElementById('loginContainer').style.display = 'flex';
+                document.getElementById('adminContainer').style.display = 'none';
+                document.getElementById('username').value = 'pratheek';
+                document.getElementById('password').value = '';
+            }
         }
 
+        // Show Login Error
         function showLoginError(message) {
-            const errorDiv = document.getElementById('loginError');
-            errorDiv.innerHTML = `<div class="error">${message}</div>`;
+            document.getElementById('loginError').innerHTML = `<div class="error">${message}</div>`;
             setTimeout(() => {
-                errorDiv.innerHTML = '';
+                document.getElementById('loginError').innerHTML = '';
             }, 5000);
         }
     </script>
