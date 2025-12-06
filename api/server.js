@@ -6,12 +6,12 @@ const cors = require('cors');
 const path = require('path');
 
 const app = express();
-const port = process.env.PORT || 5000;
+const port = process.env.PORT || 3000;
 
-// Database connection (Configured for Neon/Postgres)
+// Database connection
 const pool = new Pool({
     connectionString: process.env.DATABASE_URL,
-    ssl: { rejectUnauthorized: false } // Required for most cloud DBs like Neon
+    ssl: { rejectUnauthorized: false }
 });
 
 // Middleware
@@ -19,7 +19,7 @@ app.use(cors({ origin: '*', credentials: true }));
 app.use(express.json());
 
 // Serve static files
-app.use(express.static('public'));
+app.use(express.static(path.join(__dirname, '../public')));
 
 console.log('✅ Server initializing...');
 console.log('🌍 CORS enabled for all origins');
@@ -28,7 +28,7 @@ console.log('📊 Database URL configured:', !!process.env.DATABASE_URL);
 // ============= ROOT & STATIC FILES =============
 
 app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public', 'index.html'));
+    res.sendFile(path.join(__dirname, '../public/index.html'));
 });
 
 // ============= TEST ENDPOINT =============
@@ -42,10 +42,31 @@ app.get('/api/test', async (req, res) => {
             time: result.rows[0]
         });
     } catch (error) {
-        console.error('Database Connection Error:', error);
         res.status(500).json({
             success: false,
-            error: 'Database connection failed'
+            error: error.message
+        });
+    }
+});
+
+// ============= DEBUG ENDPOINT =============
+
+app.get('/api/debug/table-structure', async (req, res) => {
+    try {
+        const result = await pool.query(`
+            SELECT column_name, data_type 
+            FROM information_schema.columns 
+            WHERE table_name = 'users'
+            ORDER BY ordinal_position
+        `);
+        res.json({
+            success: true,
+            columns: result.rows
+        });
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            error: error.message
         });
     }
 });
@@ -58,7 +79,10 @@ app.post('/api/earnings/validate-token', async (req, res) => {
 
     try {
         if (!token || !uid) {
-            return res.status(400).json({ success: false, error: 'Missing token or uid' });
+            return res.status(400).json({
+                success: false,
+                error: 'Missing token or uid'
+            });
         }
 
         const userResult = await pool.query(
@@ -67,7 +91,10 @@ app.post('/api/earnings/validate-token', async (req, res) => {
         );
 
         if (userResult.rows.length === 0) {
-            return res.status(401).json({ success: false, error: 'User not found' });
+            return res.status(401).json({
+                success: false,
+                error: 'User not found'
+            });
         }
 
         const user = userResult.rows[0];
@@ -83,16 +110,18 @@ app.post('/api/earnings/validate-token', async (req, res) => {
             }
         });
     } catch (error) {
-        res.status(500).json({ success: false, error: error.message });
+        res.status(500).json({
+            success: false,
+            error: error.message
+        });
     }
 });
 
-// 2. Dashboard summary (Fixed to include Available Balance)
+// 2. Dashboard summary
 app.get('/api/earnings/dashboard/:userId', async (req, res) => {
     const { userId } = req.params;
 
     try {
-        // 1. Calculate Earnings per Operator
         const earningsResult = await pool.query(`
             SELECT 
                 rl.operator,
@@ -108,35 +137,25 @@ app.get('/api/earnings/dashboard/:userId', async (req, res) => {
             GROUP BY rl.operator
         `, [userId]);
 
-        // 2. Calculate Total Lifetime Earnings
-        let totalLifetimeEarnings = 0;
+        let totalEarnings = 0;
         earningsResult.rows.forEach(row => {
-            totalLifetimeEarnings += parseFloat(row.total_amount || 0);
+            totalEarnings += parseFloat(row.total_amount || 0);
         });
-
-        // 3. Calculate Total Withdrawals (Pending + Approved/Paid)
-        const withdrawalsResult = await pool.query(`
-            SELECT COALESCE(SUM(requested_amount), 0) as total_withdrawn
-            FROM withdrawals 
-            WHERE user_id = $1 AND status IN ('pending', 'approved', 'paid')
-        `, [userId]);
-
-        const totalWithdrawn = parseFloat(withdrawalsResult.rows[0].total_withdrawn);
-        const currentBalance = totalLifetimeEarnings - totalWithdrawn;
 
         res.json({
             success: true,
-            totalEarnings: totalLifetimeEarnings.toFixed(2),
-            currentBalance: currentBalance.toFixed(2), // New field for frontend
-            totalWithdrawn: totalWithdrawn.toFixed(2),
+            totalEarnings: totalEarnings.toFixed(2),
             userEarnings: earningsResult.rows
         });
     } catch (error) {
-        res.status(500).json({ success: false, error: error.message });
+        res.status(500).json({
+            success: false,
+            error: error.message
+        });
     }
 });
 
-// 3. Winners of the week (Rolling 7 Days)
+// 3. Winners of the week
 app.get('/api/earnings/winners-of-week', async (req, res) => {
     try {
         const result = await pool.query(`
@@ -160,13 +179,19 @@ app.get('/api/earnings/winners-of-week', async (req, res) => {
             LIMIT 10
         `);
 
-        res.json({ success: true, winners: result.rows });
+        res.json({
+            success: true,
+            winners: result.rows
+        });
     } catch (error) {
-        res.status(500).json({ success: false, error: error.message });
+        res.status(500).json({
+            success: false,
+            error: error.message
+        });
     }
 });
 
-// 4. Referral links for a user
+// 4. Referral links
 app.get('/api/earnings/referral-links/:userId', async (req, res) => {
     const { userId } = req.params;
 
@@ -176,9 +201,15 @@ app.get('/api/earnings/referral-links/:userId', async (req, res) => {
             [userId]
         );
 
-        res.json({ success: true, referralLinks: result.rows });
+        res.json({
+            success: true,
+            referralLinks: result.rows
+        });
     } catch (error) {
-        res.status(500).json({ success: false, error: error.message });
+        res.status(500).json({
+            success: false,
+            error: error.message
+        });
     }
 });
 
@@ -201,13 +232,19 @@ app.get('/api/earnings/history/:userId', async (req, res) => {
             ORDER BY r.created_at DESC
         `, [userId]);
 
-        res.json({ success: true, earningsHistory: result.rows });
+        res.json({
+            success: true,
+            earningsHistory: result.rows
+        });
     } catch (error) {
-        res.status(500).json({ success: false, error: error.message });
+        res.status(500).json({
+            success: false,
+            error: error.message
+        });
     }
 });
 
-// 6. Withdrawals history
+// 6. Withdrawals
 app.get('/api/earnings/withdrawals/:userId', async (req, res) => {
     const { userId } = req.params;
 
@@ -224,84 +261,45 @@ app.get('/api/earnings/withdrawals/:userId', async (req, res) => {
             ORDER BY requested_at DESC
         `, [userId]);
 
-        res.json({ success: true, withdrawals: result.rows });
+        res.json({
+            success: true,
+            withdrawals: result.rows
+        });
     } catch (error) {
-        res.status(500).json({ success: false, error: error.message });
+        res.status(500).json({
+            success: false,
+            error: error.message
+        });
     }
 });
 
-// 7. Request withdrawal (SECURED)
+// 7. Request withdrawal
 app.post('/api/earnings/request-withdrawal', async (req, res) => {
     const { operator, requestedAmount, uid } = req.body;
 
     try {
-        // --- VALIDATION START ---
-        if (!operator || !uid) {
-            return res.status(400).json({ success: false, error: 'Missing required fields' });
-        }
-
-        const amount = parseFloat(requestedAmount);
-        if (isNaN(amount) || amount <= 0) {
-            return res.status(400).json({ success: false, error: 'Invalid withdrawal amount' });
-        }
-
-        // Check 1: Does user already have a PENDING request? (Prevent double withdrawals)
-        const pendingCheck = await pool.query(
-            "SELECT id FROM withdrawals WHERE user_id = $1 AND status = 'pending'",
-            [uid]
-        );
-        
-        if (pendingCheck.rows.length > 0) {
-            return res.status(400).json({ 
-                success: false, 
-                error: 'You already have a pending withdrawal request. Please wait for it to be processed.' 
+        if (!operator || !requestedAmount || !uid) {
+            return res.status(400).json({
+                success: false,
+                error: 'Missing required fields'
             });
         }
 
-        // Check 2: Calculate actual available balance
-        // Total Earned (Lifetime)
-        const earningsRes = await pool.query(`
-            SELECT COALESCE(SUM(CASE WHEN r.status = 'approved' THEN 100 ELSE 0 END), 0) as total_earned
-            FROM referral_links rl
-            JOIN referrals r ON rl.id = r.referral_link_id
-            WHERE rl.user_id = $1
-        `, [uid]);
-        
-        // Total Withdrawn (Pending + Approved + Paid)
-        const withdrawalsRes = await pool.query(`
-            SELECT COALESCE(SUM(requested_amount), 0) as total_withdrawn
-            FROM withdrawals 
-            WHERE user_id = $1 AND status IN ('pending', 'approved', 'paid')
-        `, [uid]);
-
-        const totalEarned = parseFloat(earningsRes.rows[0].total_earned);
-        const totalWithdrawn = parseFloat(withdrawalsRes.rows[0].total_withdrawn);
-        const availableBalance = totalEarned - totalWithdrawn;
-
-        if (amount > availableBalance) {
-            return res.status(400).json({ 
-                success: false, 
-                error: `Insufficient balance. Available: ₹${availableBalance.toFixed(2)}` 
-            });
-        }
-        // --- VALIDATION END ---
-
-        // Proceed to insert withdrawal
         const result = await pool.query(`
             INSERT INTO withdrawals (user_id, operator, requested_amount, status, requested_at)
             VALUES ($1, $2, $3, $4, NOW())
             RETURNING *
-        `, [uid, operator, amount, 'pending']);
+        `, [uid, operator, requestedAmount, 'pending']);
 
         res.json({
             success: true,
-            withdrawal: result.rows[0],
-            remainingBalance: (availableBalance - amount).toFixed(2)
+            withdrawal: result.rows[0]
         });
-
     } catch (error) {
-        console.error('Withdrawal Request Error:', error);
-        res.status(500).json({ success: false, error: error.message });
+        res.status(500).json({
+            success: false,
+            error: error.message
+        });
     }
 });
 
@@ -319,15 +317,18 @@ app.use((err, req, res, next) => {
     console.error('Server error:', err);
     res.status(500).json({
         success: false,
-        error: 'Internal Server Error'
+        error: err.message
     });
 });
 
 // ============= START SERVER =============
 
-app.listen(port, () => {
-    console.log(`✅ Earnings server running on port ${port}`);
-    console.log(`🌐 Dashboard: http://localhost:${port}`);
-});
+if (require.main === module) {
+    app.listen(port, () => {
+        console.log(`✅ Earnings server running on port ${port}`);
+        console.log(`🌐 Dashboard: http://localhost:${port}`);
+        console.log(`🌐 API: http://localhost:${port}/api/test`);
+    });
+}
 
 module.exports = app;
