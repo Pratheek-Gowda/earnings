@@ -303,33 +303,7 @@ app.post('/api/earnings/request-withdrawal', async (req, res) => {
     }
 });
 
-// ============= ERROR HANDLERS =============
-
-app.use((req, res) => {
-    res.status(404).json({
-        success: false,
-        error: 'Endpoint not found',
-        path: req.path
-    });
-});
-
-app.use((err, req, res, next) => {
-    console.error('Server error:', err);
-    res.status(500).json({
-        success: false,
-        error: err.message
-    });
-});
-
-// ============= START SERVER =============
-
-if (require.main === module) {
-    app.listen(port, () => {
-        console.log(`✅ Earnings server running on port ${port}`);
-        console.log(`🌐 Dashboard: http://localhost:${port}`);
-        console.log(`🌐 API: http://localhost:${port}/api/test`);
-    });
-    // ============= ADMIN ENDPOINTS =============
+// ============= ADMIN ENDPOINTS =============
 
 // Admin login (hardcoded credentials)
 app.post('/api/admin/login', async (req, res) => {
@@ -451,6 +425,32 @@ app.delete('/api/admin/delete-referral/:id', async (req, res) => {
     }
 });
 
+// ============= ERROR HANDLERS =============
+
+app.use((req, res) => {
+    res.status(404).json({
+        success: false,
+        error: 'Endpoint not found',
+        path: req.path
+    });
+});
+
+app.use((err, req, res, next) => {
+    console.error('Server error:', err);
+    res.status(500).json({
+        success: false,
+        error: err.message
+    });
+});
+
+// ============= START SERVER =============
+
+if (require.main === module) {
+    app.listen(port, () => {
+        console.log(`✅ Earnings server running on port ${port}`);
+        console.log(`🌐 Dashboard: http://localhost:${port}`);
+        console.log(`🌐 API: http://localhost:${port}/api/test`);
+    });
 }
 
 module.exports = app;
