@@ -3,6 +3,7 @@ require('dotenv').config();
 const express = require('express');
 const { Pool } = require('pg');
 const cors = require('cors');
+const path = require('path');
 
 const app = express();
 const port = process.env.PORT || 5000;
@@ -17,9 +18,19 @@ const pool = new Pool({
 app.use(cors({ origin: '*', credentials: true }));
 app.use(express.json());
 
+// Serve static files
+app.use(express.static('public'));
+
 console.log('✅ Server initializing...');
 console.log('🌍 CORS enabled for all origins');
 console.log('📊 Database URL configured:', !!process.env.DATABASE_URL);
+
+// ============= ROOT & STATIC FILES =============
+
+// Serve index.html for root path
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
 
 // ============= TEST ENDPOINT =============
 
@@ -63,7 +74,7 @@ app.get('/api/debug/table-structure', async (req, res) => {
 
 // ============= EARNINGS ENDPOINTS =============
 
-// 1. Validate token - FIXED FOR ACTUAL COLUMNS
+// 1. Validate token
 app.post('/api/earnings/validate-token', async (req, res) => {
     const { token, uid } = req.body;
 
@@ -145,7 +156,7 @@ app.get('/api/earnings/dashboard/:userId', async (req, res) => {
     }
 });
 
-// 3. Winners of the week - FIXED FOR ACTUAL COLUMNS
+// 3. Winners of the week
 app.get('/api/earnings/winners-of-week', async (req, res) => {
     try {
         const result = await pool.query(`
@@ -315,7 +326,8 @@ app.use((err, req, res, next) => {
 
 app.listen(port, () => {
     console.log(`✅ Earnings server running on port ${port}`);
-    console.log(`🌐 Test: http://localhost:${port}/api/test`);
+    console.log(`🌐 Dashboard: http://localhost:${port}`);
+    console.log(`🌐 API: http://localhost:${port}/api/test`);
 });
 
 module.exports = app;
