@@ -7,13 +7,11 @@ const cors = require('cors');
 const app = express();
 const port = process.env.PORT || 5000;
 
-// Database connection
 const pool = new Pool({
     connectionString: process.env.DATABASE_URL,
     ssl: { rejectUnauthorized: false }
 });
 
-// Middleware
 app.use(cors({ origin: '*', credentials: true }));
 app.use(express.json());
 
@@ -32,7 +30,7 @@ app.get('/api/test', async (req, res) => {
     }
 });
 
-// ============= DEBUG ENDPOINT (TEMPORARY) =============
+// ============= DEBUG ENDPOINT =============
 
 app.get('/api/debug/table-structure', async (req, res) => {
     try {
@@ -53,7 +51,7 @@ app.get('/api/debug/table-structure', async (req, res) => {
 
 // ============= EARNINGS ENDPOINTS =============
 
-// 1. Validate token - UPDATED to use SELECT *
+// 1. Validate token
 app.post('/api/earnings/validate-token', async (req, res) => {
     const { token, uid } = req.body;
 
@@ -65,9 +63,8 @@ app.post('/api/earnings/validate-token', async (req, res) => {
             });
         }
 
-        // Use SELECT * to get all columns
         const userResult = await pool.query(
-            'SELECT * FROM users WHERE id = $1',
+            'SELECT id, email, role, partner_id, created_at FROM users WHERE id = $1',
             [uid]
         );
 
@@ -80,10 +77,15 @@ app.post('/api/earnings/validate-token', async (req, res) => {
 
         const user = userResult.rows[0];
 
-        // Return all user data so we can see what columns exist
         res.json({
             success: true,
-            user: user
+            user: {
+                id: user.id,
+                email: user.email,
+                role: user.role,
+                partnerId: user.partner_id,
+                createdAt: user.created_at
+            }
         });
     } catch (error) {
         res.status(500).json({ success: false, error: error.message });
@@ -131,6 +133,7 @@ app.get('/api/earnings/winners-of-week', async (req, res) => {
         const result = await pool.query(`
             SELECT 
                 u.id,
+                u.email,
                 COALESCE(
                     SUM(CASE WHEN r.status = 'approved' THEN 100 ELSE 0 END),
                     0
@@ -142,7 +145,7 @@ app.get('/api/earnings/winners-of-week', async (req, res) => {
             LEFT JOIN referral_links rl ON u.id = rl.user_id
             LEFT JOIN referrals r ON rl.id = r.referral_link_id
             WHERE r.created_at >= CURRENT_DATE - INTERVAL '7 days'
-            GROUP BY u.id
+            GROUP BY u.id, u.email
             HAVING SUM(CASE WHEN r.status = 'approved' THEN 100 ELSE 0 END) > 0
             ORDER BY total_earnings DESC
             LIMIT 10
@@ -157,7 +160,7 @@ app.get('/api/earnings/winners-of-week', async (req, res) => {
     }
 });
 
-// 4. Referral links for a user
+// 4. Referral links
 app.get('/api/earnings/referral-links/:userId', async (req, res) => {
     const { userId } = req.params;
 
@@ -204,7 +207,7 @@ app.get('/api/earnings/history/:userId', async (req, res) => {
     }
 });
 
-// 6. Withdrawals history
+// 6. Withdrawals
 app.get('/api/earnings/withdrawals/:userId', async (req, res) => {
     const { userId } = req.params;
 
