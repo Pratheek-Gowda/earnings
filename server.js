@@ -261,6 +261,24 @@ app.use((err, req, res, next) => {
         error: err.message
     });
 });
+// Add this TEMPORARY endpoint to check your table structure
+app.get('/api/debug/table-structure', async (req, res) => {
+    try {
+        const result = await pool.query(`
+            SELECT column_name, data_type 
+            FROM information_schema.columns 
+            WHERE table_name = 'users'
+            ORDER BY ordinal_position
+        `);
+        res.json({
+            success: true,
+            columns: result.rows
+        });
+    } catch (error) {
+        res.status(500).json({ success: false, error: error.message });
+    }
+});
+
 
 // ============= START SERVER =============
 
