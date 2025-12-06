@@ -10,25 +10,6 @@
     {
       "source": "/api/:path*",
       "destination": "/api/server.js"
-    },
-    {
-      "source": "/(.*)",
-      "destination": "/public/index.html"
-    }
-  ]
-}
-{
-  "buildCommand": "npm install",
-  "functions": {
-    "api/server.js": {
-      "memory": 1024,
-      "maxDuration": 30
-    }
-  },
-  "rewrites": [
-    {
-      "source": "/api/:path*",
-      "destination": "/api/server.js"
     }
   ],
   "headers": [
