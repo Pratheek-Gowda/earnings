@@ -7,13 +7,19 @@ const cors = require('cors');
 const app = express();
 const port = process.env.PORT || 5000;
 
+// Database connection
 const pool = new Pool({
     connectionString: process.env.DATABASE_URL,
     ssl: { rejectUnauthorized: false }
 });
 
+// Middleware
 app.use(cors({ origin: '*', credentials: true }));
 app.use(express.json());
+
+console.log('✅ Server initializing...');
+console.log('🌍 CORS enabled for all origins');
+console.log('📊 Database URL configured:', !!process.env.DATABASE_URL);
 
 // ============= TEST ENDPOINT =============
 
@@ -26,7 +32,10 @@ app.get('/api/test', async (req, res) => {
             time: result.rows[0]
         });
     } catch (error) {
-        res.status(500).json({ success: false, error: error.message });
+        res.status(500).json({
+            success: false,
+            error: error.message
+        });
     }
 });
 
@@ -45,13 +54,16 @@ app.get('/api/debug/table-structure', async (req, res) => {
             columns: result.rows
         });
     } catch (error) {
-        res.status(500).json({ success: false, error: error.message });
+        res.status(500).json({
+            success: false,
+            error: error.message
+        });
     }
 });
 
 // ============= EARNINGS ENDPOINTS =============
 
-// 1. Validate token
+// 1. Validate token - FIXED FOR ACTUAL COLUMNS
 app.post('/api/earnings/validate-token', async (req, res) => {
     const { token, uid } = req.body;
 
@@ -88,7 +100,10 @@ app.post('/api/earnings/validate-token', async (req, res) => {
             }
         });
     } catch (error) {
-        res.status(500).json({ success: false, error: error.message });
+        res.status(500).json({
+            success: false,
+            error: error.message
+        });
     }
 });
 
@@ -97,7 +112,7 @@ app.get('/api/earnings/dashboard/:userId', async (req, res) => {
     const { userId } = req.params;
 
     try {
-        const result = await pool.query(`
+        const earningsResult = await pool.query(`
             SELECT 
                 rl.operator,
                 COUNT(r.id) AS total_referrals,
@@ -112,22 +127,25 @@ app.get('/api/earnings/dashboard/:userId', async (req, res) => {
             GROUP BY rl.operator
         `, [userId]);
 
-        let total = 0;
-        result.rows.forEach(row => {
-            total += parseFloat(row.total_amount || 0);
+        let totalEarnings = 0;
+        earningsResult.rows.forEach(row => {
+            totalEarnings += parseFloat(row.total_amount || 0);
         });
 
         res.json({
             success: true,
-            totalEarnings: total.toFixed(2),
-            userEarnings: result.rows
+            totalEarnings: totalEarnings.toFixed(2),
+            userEarnings: earningsResult.rows
         });
     } catch (error) {
-        res.status(500).json({ success: false, error: error.message });
+        res.status(500).json({
+            success: false,
+            error: error.message
+        });
     }
 });
 
-// 3. Winners of the week
+// 3. Winners of the week - FIXED FOR ACTUAL COLUMNS
 app.get('/api/earnings/winners-of-week', async (req, res) => {
     try {
         const result = await pool.query(`
@@ -156,11 +174,14 @@ app.get('/api/earnings/winners-of-week', async (req, res) => {
             winners: result.rows
         });
     } catch (error) {
-        res.status(500).json({ success: false, error: error.message });
+        res.status(500).json({
+            success: false,
+            error: error.message
+        });
     }
 });
 
-// 4. Referral links
+// 4. Referral links for a user
 app.get('/api/earnings/referral-links/:userId', async (req, res) => {
     const { userId } = req.params;
 
@@ -175,7 +196,10 @@ app.get('/api/earnings/referral-links/:userId', async (req, res) => {
             referralLinks: result.rows
         });
     } catch (error) {
-        res.status(500).json({ success: false, error: error.message });
+        res.status(500).json({
+            success: false,
+            error: error.message
+        });
     }
 });
 
@@ -203,11 +227,14 @@ app.get('/api/earnings/history/:userId', async (req, res) => {
             earningsHistory: result.rows
         });
     } catch (error) {
-        res.status(500).json({ success: false, error: error.message });
+        res.status(500).json({
+            success: false,
+            error: error.message
+        });
     }
 });
 
-// 6. Withdrawals
+// 6. Withdrawals history
 app.get('/api/earnings/withdrawals/:userId', async (req, res) => {
     const { userId } = req.params;
 
@@ -229,7 +256,10 @@ app.get('/api/earnings/withdrawals/:userId', async (req, res) => {
             withdrawals: result.rows
         });
     } catch (error) {
-        res.status(500).json({ success: false, error: error.message });
+        res.status(500).json({
+            success: false,
+            error: error.message
+        });
     }
 });
 
@@ -256,7 +286,10 @@ app.post('/api/earnings/request-withdrawal', async (req, res) => {
             withdrawal: result.rows[0]
         });
     } catch (error) {
-        res.status(500).json({ success: false, error: error.message });
+        res.status(500).json({
+            success: false,
+            error: error.message
+        });
     }
 });
 
