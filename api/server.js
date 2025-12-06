@@ -329,6 +329,128 @@ if (require.main === module) {
         console.log(`🌐 Dashboard: http://localhost:${port}`);
         console.log(`🌐 API: http://localhost:${port}/api/test`);
     });
+    // ============= ADMIN ENDPOINTS =============
+
+// Admin login (hardcoded credentials)
+app.post('/api/admin/login', async (req, res) => {
+    const { username, password } = req.body;
+
+    try {
+        // Hardcoded credentials
+        if (username === 'pratheek' && password === 'adminpratheek') {
+            res.json({
+                success: true,
+                admin: {
+                    id: 1,
+                    username: 'pratheek'
+                }
+            });
+        } else {
+            res.status(401).json({
+                success: false,
+                error: 'Invalid credentials'
+            });
+        }
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            error: error.message
+        });
+    }
+});
+
+// Get all referrals (for admin)
+app.get('/api/admin/all-referrals', async (req, res) => {
+    try {
+        const result = await pool.query(`
+            SELECT 
+                r.id,
+                r.referral_link_id,
+                r.referred_name,
+                r.referred_email,
+                r.referred_phone,
+                r.order_details,
+                r.status,
+                r.created_at,
+                rl.operator,
+                u.email as referrer_username
+            FROM referrals r
+            JOIN referral_links rl ON r.referral_link_id = rl.id
+            JOIN users u ON rl.user_id = u.id
+            ORDER BY r.created_at DESC
+        `);
+
+        res.json({
+            success: true,
+            allReferrals: result.rows
+        });
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            error: error.message
+        });
+    }
+});
+
+// Approve/Reject referral (admin)
+app.post('/api/admin/approve-referral/:id', async (req, res) => {
+    const { id } = req.params;
+    const { status, adminUsername } = req.body;
+
+    try {
+        if (!['approved', 'rejected'].includes(status)) {
+            return res.status(400).json({
+                success: false,
+                error: 'Invalid status'
+            });
+        }
+
+        const result = await pool.query(
+            'UPDATE referrals SET status = $1, updated_at = NOW() WHERE id = $2 RETURNING *',
+            [status, id]
+        );
+
+        res.json({
+            success: true,
+            referral: result.rows[0]
+        });
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            error: error.message
+        });
+    }
+});
+
+// Delete referral (admin)
+app.delete('/api/admin/delete-referral/:id', async (req, res) => {
+    const { id } = req.params;
+
+    try {
+        const result = await pool.query(
+            'DELETE FROM referrals WHERE id = $1 RETURNING id',
+            [id]
+        );
+
+        if (result.rows.length === 0) {
+            return res.status(404).json({
+                success: false,
+                error: 'Referral not found'
+            });
+        }
+
+        res.json({
+            success: true,
+            message: 'Referral deleted'
+        });
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            error: error.message
+        });
+    }
+});
+
 }
 
 module.exports = app;
