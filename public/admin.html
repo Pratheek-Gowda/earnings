@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin - Earnings Management</title>
+    <title>Admin Panel - Earnings</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
         * {
             margin: 0;
@@ -12,34 +13,32 @@
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: linear-gradient(135deg, #0f172a 0%, #1a2a4a 100%);
-            color: #e2e8f0;
-            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f7fa;
+            color: #333;
         }
 
+        /* LOGIN SCREEN */
         .login-container {
             display: flex;
-            align-items: center;
             justify-content: center;
+            align-items: center;
             min-height: 100vh;
-            padding: 20px;
         }
 
         .login-box {
-            background: rgba(30, 41, 59, 0.8);
-            border: 1px solid rgba(148, 163, 184, 0.3);
+            background: white;
             padding: 40px;
-            border-radius: 12px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
             width: 100%;
             max-width: 400px;
-            backdrop-filter: blur(10px);
         }
 
         .login-box h1 {
-            color: #60a5fa;
-            margin-bottom: 30px;
+            color: #667eea;
             text-align: center;
+            margin-bottom: 30px;
         }
 
         .form-group {
@@ -48,371 +47,395 @@
 
         .form-group label {
             display: block;
-            color: #cbd5e1;
             margin-bottom: 8px;
             font-weight: 600;
+            color: #333;
         }
 
         .form-group input {
             width: 100%;
-            background: rgba(15, 23, 42, 0.5);
-            border: 1px solid rgba(148, 163, 184, 0.2);
-            color: #e2e8f0;
             padding: 12px;
+            border: 2px solid #ddd;
             border-radius: 8px;
-            font-size: 1em;
+            font-size: 16px;
         }
 
         .form-group input:focus {
+            border-color: #667eea;
             outline: none;
-            border-color: #60a5fa;
-            background: rgba(15, 23, 42, 0.8);
         }
 
         .login-btn {
             width: 100%;
-            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            padding: 12px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
             border: none;
-            padding: 12px;
             border-radius: 8px;
             font-weight: 600;
             cursor: pointer;
-            transition: all 0.3s;
+            margin-top: 10px;
         }
 
         .login-btn:hover {
-            background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+            opacity: 0.9;
         }
 
-        .error {
-            background: #7f1d1d;
-            color: #fca5a5;
-            padding: 15px;
+        .alert {
+            padding: 12px;
             border-radius: 8px;
-            margin-bottom: 20px;
-            border-left: 4px solid #ef4444;
+            margin: 15px 0;
+            font-size: 14px;
         }
 
-        /* Admin Dashboard */
-        .admin-container {
+        .alert-error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        /* DASHBOARD */
+        .dashboard {
             display: none;
-            min-height: 100vh;
-            display: grid;
-            grid-template-columns: 250px 1fr;
         }
 
-        .sidebar {
-            background: rgba(15, 23, 42, 0.8);
-            border-right: 1px solid rgba(148, 163, 184, 0.2);
-            padding: 20px;
-            backdrop-filter: blur(10px);
-        }
-
-        .sidebar h2 {
-            color: #60a5fa;
-            margin-bottom: 20px;
-            font-size: 1.2em;
-        }
-
-        .nav-item {
-            color: #cbd5e1;
-            padding: 12px;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.3s;
-            margin-bottom: 8px;
-            border: 1px solid transparent;
-        }
-
-        .nav-item:hover {
-            background: rgba(96, 165, 250, 0.1);
-            border-color: rgba(96, 165, 250, 0.3);
-            color: #60a5fa;
-        }
-
-        .nav-item.active {
-            background: rgba(96, 165, 250, 0.2);
-            border-color: #60a5fa;
-            color: #60a5fa;
-        }
-
-        .logout-link {
-            margin-top: 30px;
-            color: #ef4444;
-            padding: 12px;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.3s;
-            border: 1px solid #ef4444;
-        }
-
-        .logout-link:hover {
-            background: rgba(239, 68, 68, 0.1);
-        }
-
-        .main-content {
-            overflow-y: auto;
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
             padding: 30px;
-        }
-
-        .content-section {
-            display: none;
-        }
-
-        .content-section.active {
-            display: block;
-        }
-
-        .section-header {
+            border-radius: 15px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 30px;
-            padding-bottom: 20px;
-            border-bottom: 1px solid rgba(148, 163, 184, 0.2);
         }
 
-        .section-header h2 {
-            color: #60a5fa;
-            font-size: 1.8em;
+        .header-left h1 {
+            font-size: 32px;
+            margin-bottom: 10px;
         }
 
-        .success {
-            background: #064e3b;
-            color: #86efac;
-            padding: 15px;
+        .header-right {
+            text-align: right;
+        }
+
+        .logout-btn {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            padding: 10px 20px;
+            border: 2px solid white;
             border-radius: 8px;
-            margin-bottom: 20px;
-            border-left: 4px solid #10b981;
+            cursor: pointer;
+            font-weight: bold;
         }
 
-        /* Stats Cards */
-        .stats-grid {
+        .logout-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .stats-row {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 20px;
+            gap: 15px;
+            margin-top: 20px;
             margin-bottom: 30px;
         }
 
         .stat-card {
-            background: rgba(30, 41, 59, 0.8);
-            border: 1px solid rgba(148, 163, 184, 0.2);
-            padding: 25px;
-            border-radius: 12px;
-            text-align: center;
-        }
-
-        .stat-label {
-            color: #94a3b8;
-            font-size: 0.9em;
-            margin-bottom: 10px;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 20px;
+            border-radius: 10px;
+            backdrop-filter: blur(10px);
         }
 
         .stat-number {
-            font-size: 2.5em;
+            font-size: 36px;
             font-weight: bold;
-            background: linear-gradient(135deg, #60a5fa 0%, #3b82f6 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
         }
 
-        /* Table Styles */
+        .stat-label {
+            font-size: 14px;
+            opacity: 0.9;
+            margin-top: 5px;
+        }
+
+        .controls {
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .controls button {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 14px;
+        }
+
+        .refresh-btn {
+            background: #667eea;
+            color: white;
+        }
+
+        .refresh-btn:hover {
+            background: #764ba2;
+            transform: translateY(-2px);
+        }
+
+        .filter-btn {
+            background: #f4f7f9;
+            color: #333;
+            border: 2px solid #ddd;
+        }
+
+        .filter-btn.active {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+
         .table-container {
-            background: rgba(30, 41, 59, 0.8);
-            border: 1px solid rgba(148, 163, 184, 0.2);
-            border-radius: 12px;
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
             overflow-x: auto;
-            margin-bottom: 30px;
         }
 
         table {
             width: 100%;
             border-collapse: collapse;
+            min-width: 1000px;
         }
 
-        thead {
-            background: rgba(15, 23, 42, 0.5);
-            border-bottom: 1px solid rgba(148, 163, 184, 0.2);
+        th, td {
+            padding: 16px;
+            text-align: left;
+            border-bottom: 1px solid #e0e0e0;
         }
 
         th {
-            padding: 15px;
-            text-align: left;
-            color: #a78bfa;
+            background: #667eea;
+            color: white;
             font-weight: 600;
-            font-size: 0.9em;
-        }
-
-        td {
-            padding: 12px 15px;
-            border-bottom: 1px solid rgba(148, 163, 184, 0.1);
-            color: #cbd5e1;
+            text-transform: uppercase;
+            font-size: 12px;
+            letter-spacing: 0.5px;
+            position: sticky;
+            top: 0;
         }
 
         tr:hover {
-            background: rgba(51, 65, 85, 0.3);
+            background: #f8f9fa;
         }
 
-        .action-btn {
-            background: #3b82f6;
-            color: white;
-            border: none;
-            padding: 6px 12px;
+        .approve-btn, .reject-btn, .delete-btn {
+            padding: 8px 16px;
             border-radius: 6px;
-            cursor: pointer;
-            font-size: 0.85em;
-            transition: background 0.3s;
             margin-right: 5px;
+            font-weight: 400;
+            border: none;
+            cursor: pointer;
+            font-size: 12px;
         }
 
-        .action-btn:hover {
-            background: #2563eb;
+        .approve-btn {
+            background: #28a745;
+            color: white;
         }
 
-        .action-btn.danger {
-            background: #ef4444;
+        .approve-btn:hover {
+            background: #218838;
         }
 
-        .action-btn.danger:hover {
-            background: #dc2626;
+        .reject-btn {
+            background: #dc3545;
+            color: white;
         }
 
-        .action-btn.success {
-            background: #10b981;
-        }
-
-        .action-btn.success:hover {
-            background: #059669;
+        .reject-btn:hover {
+            background: #c82333;
         }
 
         .status-badge {
             display: inline-block;
             padding: 4px 12px;
             border-radius: 20px;
-            font-size: 0.85em;
-            font-weight: 600;
+            font-size: 12px;
+            font-weight: bold;
         }
 
         .status-pending {
-            background: rgba(245, 158, 11, 0.2);
-            color: #fbbf24;
+            background: #fff3cd;
+            color: #856404;
         }
 
         .status-approved {
-            background: rgba(16, 185, 129, 0.2);
-            color: #86efac;
+            background: #d4edda;
+            color: #155724;
         }
 
         .status-rejected {
-            background: rgba(239, 68, 68, 0.2);
-            color: #fca5a5;
+            background: #f8d7da;
+            color: #721c24;
         }
 
-        @media (max-width: 768px) {
-            .admin-container {
-                grid-template-columns: 1fr;
-            }
+        .operator-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+            color: white;
+        }
 
-            .sidebar {
-                display: none;
-            }
+        .badge-vi {
+            background: #ea1212;
+        }
 
-            .section-header {
-                flex-direction: column;
-                gap: 15px;
-                align-items: flex-start;
-            }
+        .badge-airtel {
+            background: #e60000;
+        }
 
-            .stats-grid {
-                grid-template-columns: 1fr;
-            }
+        .badge-jio {
+            background: #0a2885;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #666;
+        }
+
+        .empty-state-icon {
+            font-size: 64px;
+            margin-bottom: 20px;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #667eea;
+            font-size: 18px;
+        }
+
+        .auto-refresh {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-left: auto;
+            color: #666;
+            font-size: 14px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .hidden {
+            display: none !important;
         }
     </style>
 </head>
 <body>
-    <!-- Login Form -->
-    <div id="loginContainer" class="login-container">
+    <!-- LOGIN SCREEN -->
+    <div id="loginScreen" class="login-container">
         <div class="login-box">
             <h1>Admin Login</h1>
-            <div id="loginError"></div>
+            <div id="loginAlert"></div>
             <div class="form-group">
                 <label>Username</label>
-                <input type="text" id="username" placeholder="Enter username" value="pratheek">
+                <input type="text" id="adminUsername" placeholder="Admin Username" value="pratheek" autocomplete="username">
             </div>
             <div class="form-group">
                 <label>Password</label>
-                <input type="password" id="password" placeholder="Enter password">
+                <input type="password" id="adminPassword" placeholder="Admin Password" autocomplete="current-password">
             </div>
             <button class="login-btn" onclick="adminLogin()">Login</button>
         </div>
     </div>
 
-    <!-- Admin Dashboard -->
-    <div id="adminContainer" class="admin-container">
-        <!-- Sidebar -->
-        <div class="sidebar">
-            <h2>Admin</h2>
-            <div class="nav-item active" onclick="showSection('dashboard')">Dashboard</div>
-            <div class="nav-item" onclick="showSection('referrals')">Referrals</div>
-            <div class="nav-item logout-link" onclick="adminLogout()">Logout</div>
-        </div>
-
-        <!-- Main Content -->
-        <div class="main-content">
-            <!-- Dashboard Section -->
-            <div id="dashboard" class="content-section active">
-                <div class="section-header">
-                    <h2>Dashboard</h2>
+    <!-- DASHBOARD -->
+    <div id="dashboard" class="dashboard">
+        <div class="container">
+            <div class="header">
+                <div class="header-left">
+                    <h1>Admin Dashboard</h1>
+                    <p>Manage and approve referral submissions</p>
                 </div>
-
-                <div class="stats-grid">
-                    <div class="stat-card">
-                        <div class="stat-label">Total Earnings</div>
-                        <div class="stat-number">₹<span id="totalEarnings">0</span></div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-label">Pending Referrals</div>
-                        <div class="stat-number" id="pendingCount">0</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-label">Approved Referrals</div>
-                        <div class="stat-number" id="approvedCount">0</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-label">Total Referrals</div>
-                        <div class="stat-number" id="totalCount">0</div>
-                    </div>
+                <div class="header-right">
+                    <p><strong id="adminName">Admin</strong></p>
+                    <button class="logout-btn" onclick="adminLogout()">Logout</button>
                 </div>
             </div>
 
-            <!-- Referrals Section -->
-            <div id="referrals" class="content-section">
-                <div class="section-header">
-                    <h2>All Referrals</h2>
+            <div class="stats-row">
+                <div class="stat-card">
+                    <div class="stat-number" id="pendingCount">0</div>
+                    <div class="stat-label">Pending</div>
                 </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="approvedCount">0</div>
+                    <div class="stat-label">Approved</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="rejectedCount">0</div>
+                    <div class="stat-label">Rejected</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="totalCount">0</div>
+                    <div class="stat-label">Total</div>
+                </div>
+            </div>
 
-                <div class="table-container">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>ID</th>
-                                <th>Status</th>
-                                <th>Customer Name</th>
-                                <th>Operator</th>
-                                <th>Referrer</th>
-                                <th>Submitted</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody id="tableBody">
-                            <tr>
-                                <td colspan="7" style="text-align: center; color: #94a3b8;">Loading referrals...</td>
-                            </tr>
-                        </tbody>
-                    </table>
+            <div class="controls">
+                <button class="refresh-btn" onclick="loadReferrals()">Refresh</button>
+                <button class="filter-btn active" onclick="filterReferrals('all')">All</button>
+                <button class="filter-btn" onclick="filterReferrals('pending')">Pending</button>
+                <button class="filter-btn" onclick="filterReferrals('approved')">Approved</button>
+                <button class="filter-btn" onclick="filterReferrals('rejected')">Rejected</button>
+                <div class="auto-refresh">
+                    <span>Auto-refresh in <strong id="countdown">30</strong>s</span>
                 </div>
+            </div>
+
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Status</th>
+                            <th>Customer Details</th>
+                            <th>Contact</th>
+                            <th>Operator</th>
+                            <th>Referrer</th>
+                            <th>Submitted</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tableBody">
+                        <tr>
+                            <td colspan="8" class="loading">Loading referrals...</td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
         </div>
     </div>
@@ -420,14 +443,18 @@
     <script>
         const APIURL = 'https://earnings.pratheek.shop/api/';
         let currentAdmin = null;
+        let allReferrals = [];
+        let currentFilter = 'all';
+        let countdownTimer;
+        let countdownValue = 30;
 
         // Admin Login
         async function adminLogin() {
-            const username = document.getElementById('username').value.trim();
-            const password = document.getElementById('password').value;
+            const username = document.getElementById('adminUsername').value.trim();
+            const password = document.getElementById('adminPassword').value;
 
             if (!username || !password) {
-                showLoginError('Please fill all fields');
+                showLoginAlert('Please fill all fields');
                 return;
             }
 
@@ -443,14 +470,12 @@
                 if (data.success) {
                     currentAdmin = data.admin;
                     localStorage.setItem('admin', JSON.stringify(data.admin));
-                    document.getElementById('loginContainer').style.display = 'none';
-                    document.getElementById('adminContainer').style.display = 'grid';
-                    loadDashboard();
+                    showDashboard();
                 } else {
-                    showLoginError(data.error);
+                    showLoginAlert(data.error);
                 }
             } catch (error) {
-                showLoginError('Network error: ' + error.message);
+                showLoginAlert('Network error: ' + error.message);
             }
         }
 
@@ -459,50 +484,17 @@
             const savedAdmin = localStorage.getItem('admin');
             if (savedAdmin) {
                 currentAdmin = JSON.parse(savedAdmin);
-                document.getElementById('loginContainer').style.display = 'none';
-                document.getElementById('adminContainer').style.display = 'grid';
-                loadDashboard();
+                showDashboard();
             }
         };
 
-        // Show Section
-        function showSection(section) {
-            document.querySelectorAll('.content-section').forEach(s => s.classList.remove('active'));
-            document.getElementById(section).classList.add('active');
-
-            document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
-            event.target.classList.add('active');
-
-            if (section === 'referrals') {
-                loadReferrals();
-            }
-        }
-
-        // Load Dashboard
-        async function loadDashboard() {
-            try {
-                const response = await fetch(APIURL + 'earnings/dashboard/1');
-                const data = await response.json();
-
-                if (data.success) {
-                    let totalEarnings = 0;
-                    let totalReferrals = 0;
-                    let approvedReferrals = 0;
-
-                    data.userEarnings.forEach(row => {
-                        totalEarnings += parseFloat(row.total_amount || 0);
-                        totalReferrals += parseInt(row.total_referrals || 0);
-                        approvedReferrals += parseInt(row.approved_referrals_count || 0);
-                    });
-
-                    document.getElementById('totalEarnings').textContent = totalEarnings.toFixed(0);
-                    document.getElementById('approvedCount').textContent = approvedReferrals;
-                    document.getElementById('pendingCount').textContent = totalReferrals - approvedReferrals;
-                    document.getElementById('totalCount').textContent = totalReferrals;
-                }
-            } catch (error) {
-                console.error('Error loading dashboard:', error);
-            }
+        // Show Dashboard
+        function showDashboard() {
+            document.getElementById('loginScreen').style.display = 'none';
+            document.getElementById('dashboard').style.display = 'block';
+            document.getElementById('adminName').textContent = currentAdmin.username;
+            loadReferrals();
+            startCountdown();
         }
 
         // Load Referrals
@@ -511,43 +503,78 @@
                 const response = await fetch(APIURL + 'admin/all-referrals');
                 const data = await response.json();
 
-                const tbody = document.getElementById('tableBody');
-                tbody.innerHTML = '';
+                if (data.success) {
+                    allReferrals = data.allReferrals;
+                    updateStats();
+                    displayReferrals();
+                    resetCountdown();
+                }
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        }
 
-                if (!data.success || !data.allReferrals || data.allReferrals.length === 0) {
-                    tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; color: #94a3b8;">No referrals found</td></tr>';
-                    return;
+        // Update Stats
+        function updateStats() {
+            const pending = allReferrals.filter(r => r.status === 'pending').length;
+            const approved = allReferrals.filter(r => r.status === 'approved').length;
+            const rejected = allReferrals.filter(r => r.status === 'rejected').length;
+
+            document.getElementById('pendingCount').textContent = pending;
+            document.getElementById('approvedCount').textContent = approved;
+            document.getElementById('rejectedCount').textContent = rejected;
+            document.getElementById('totalCount').textContent = allReferrals.length;
+        }
+
+        // Filter Referrals
+        function filterReferrals(status) {
+            currentFilter = status;
+            document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            displayReferrals();
+        }
+
+        // Display Referrals
+        function displayReferrals() {
+            const tbody = document.getElementById('tableBody');
+            let filteredReferrals = allReferrals;
+
+            if (currentFilter !== 'all') {
+                filteredReferrals = allReferrals.filter(r => r.status === currentFilter);
+            }
+
+            if (filteredReferrals.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="8"><div class="empty-state"><div class="empty-state-icon">📭</div><h3>No ${currentFilter === 'all' ? '' : currentFilter} referrals</h3></div></td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = filteredReferrals.map(r => {
+                const date = new Date(r.created_at);
+                const formattedDate = date.toLocaleDateString('en-IN') + ' ' + date.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' });
+
+                let statusBadge = `<span class="status-badge status-${r.status}">${r.status.toUpperCase()}</span>`;
+
+                let actions = '';
+                if (r.status === 'pending') {
+                    actions = `
+                        <button class="approve-btn" onclick="approveReferral(${r.id})">Approve</button>
+                        <button class="reject-btn" onclick="rejectReferral(${r.id})">Reject</button>
+                    `;
                 }
 
-                data.allReferrals.forEach(r => {
-                    const date = new Date(r.created_at);
-                    const formattedDate = date.toLocaleDateString('en-IN') + ' ' + date.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' });
-
-                    let statusBadge = `<span class="status-badge status-${r.status}">${r.status.toUpperCase()}</span>`;
-
-                    let actions = '';
-                    if (r.status === 'pending') {
-                        actions = `
-                            <button class="action-btn success" onclick="approveReferral(${r.id})">Approve</button>
-                            <button class="action-btn danger" onclick="rejectReferral(${r.id})">Reject</button>
-                        `;
-                    }
-
-                    const row = document.createElement('tr');
-                    row.innerHTML = `
+                return `
+                    <tr>
                         <td><strong>${r.id}</strong></td>
                         <td>${statusBadge}</td>
-                        <td><strong>${r.referred_name}</strong><br><small style="color: #94a3b8;">${r.referred_email || 'No email'}</small></td>
-                        <td><span style="color: #fbbf24; font-weight: bold;">${r.operator.toUpperCase()}</span></td>
+                        <td><strong>${r.referred_name}</strong><br><small style="color: #666;">${r.referred_email || 'No email'}</small></td>
+                        <td>${r.referred_phone || 'N/A'}</td>
+                        <td><span class="operator-badge badge-${r.operator.toLowerCase()}">${r.operator.toUpperCase()}</span></td>
                         <td><strong>${r.referrer_username}</strong></td>
                         <td><small>${formattedDate}</small></td>
                         <td>${actions}</td>
-                    `;
-                    tbody.appendChild(row);
-                });
-            } catch (error) {
-                console.error('Error loading referrals:', error);
-            }
+                    </tr>
+                `;
+            }).join('');
         }
 
         // Approve Referral
@@ -562,13 +589,11 @@
                 });
 
                 const data = await response.json();
-
                 if (data.success) {
-                    alert('Referral approved!');
+                    alert('✅ Referral approved!');
                     loadReferrals();
-                    loadDashboard();
                 } else {
-                    alert('Error: ' + data.error);
+                    alert('❌ Error: ' + data.error);
                 }
             } catch (error) {
                 alert('Network error: ' + error.message);
@@ -587,17 +612,34 @@
                 });
 
                 const data = await response.json();
-
                 if (data.success) {
-                    alert('Referral rejected!');
+                    alert('✅ Referral rejected!');
                     loadReferrals();
-                    loadDashboard();
                 } else {
-                    alert('Error: ' + data.error);
+                    alert('❌ Error: ' + data.error);
                 }
             } catch (error) {
                 alert('Network error: ' + error.message);
             }
+        }
+
+        // Countdown Timer
+        function startCountdown() {
+            clearInterval(countdownTimer);
+            countdownTimer = setInterval(() => {
+                countdownValue--;
+                document.getElementById('countdown').textContent = countdownValue;
+                if (countdownValue === 0) {
+                    loadReferrals();
+                }
+            }, 1000);
+        }
+
+        function resetCountdown() {
+            clearInterval(countdownTimer);
+            countdownValue = 30;
+            document.getElementById('countdown').textContent = countdownValue;
+            startCountdown();
         }
 
         // Logout
@@ -605,20 +647,28 @@
             if (confirm('Are you sure you want to logout?')) {
                 currentAdmin = null;
                 localStorage.removeItem('admin');
-                document.getElementById('loginContainer').style.display = 'flex';
-                document.getElementById('adminContainer').style.display = 'none';
-                document.getElementById('username').value = 'pratheek';
-                document.getElementById('password').value = '';
+                clearInterval(countdownTimer);
+                document.getElementById('loginScreen').style.display = 'flex';
+                document.getElementById('dashboard').style.display = 'none';
+                document.getElementById('adminUsername').value = 'pratheek';
+                document.getElementById('adminPassword').value = '';
             }
         }
 
         // Show Login Error
-        function showLoginError(message) {
-            document.getElementById('loginError').innerHTML = `<div class="error">${message}</div>`;
+        function showLoginAlert(message) {
+            document.getElementById('loginAlert').innerHTML = `<div class="alert alert-error">${message}</div>`;
             setTimeout(() => {
-                document.getElementById('loginError').innerHTML = '';
+                document.getElementById('loginAlert').innerHTML = '';
             }, 5000);
         }
+
+        // Enter key to login
+        document.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter' && document.getElementById('loginScreen').style.display !== 'none') {
+                adminLogin();
+            }
+        });
     </script>
 </body>
 </html>
