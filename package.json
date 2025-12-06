@@ -1,7 +1,6 @@
 {
   "name": "earnings-dashboard",
   "version": "1.0.0",
-  "description": "Earnings Dashboard",
   "main": "api/server.js",
   "scripts": {
     "dev": "node api/server.js",
